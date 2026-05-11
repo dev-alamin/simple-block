@@ -1,0 +1,49 @@
+.wp-block-simple-block-simple-accordion{
+
+    .wp-block-simple-block-accordion-item{
+        margin: 0;
+        padding: 10px;
+
+        h4{
+            margin: 0;
+        }
+    }
+
+        .wp-block-simple-block-accordion-item {
+        // 1. Transition makes the color change smooth
+        transition: background-color 0.3s ease, color 0.3s ease;
+
+        // 2. Hover State
+        &:hover {
+            background-color: var(--acc-hover-bg);
+            
+            .accordion-title {
+                color: var(--acc-hover-heading);
+            }
+            .inner-content{
+                color: var(--acc-hover-content);
+            }
+        }
+
+        // 3. Active State (Applied via Interactivity API)
+        &.is-active {
+            background-color: var(--acc-active-bg) !important; 
+            
+            .accordion-title {
+                color: var(--acc-active-heading);
+            }
+            .inner-content{
+                color: var(--acc-active-content);
+            }
+        }
+    }
+
+    // Ensure the typography is applied
+    .accordion-title {
+        font-size: var(--acc-heading-size, 22px);
+    }
+    .inner-content {
+        font-size: var(--acc-content-size, 14px);
+        color: var(--acc-active-content);
+    }
+}

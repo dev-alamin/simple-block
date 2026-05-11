@@ -1,0 +1,52 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "simple-block/portfolio",
+	"version": "1.0.0",
+	"title": "Portfolio Grid",
+	"category": "widgets",
+	"icon": "smiley",
+	"keywords": ["portfolio", "grid"],
+	"description": "A block to display a portfolio grid.",
+	"example": {},
+	"attributes":{
+		"category": {
+			"type": "number",
+			"default": 0
+		},
+		"postsPerPage": {
+			"type": "number",
+			"default": 5
+		}
+	},
+	"supports": {
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true
+		},
+		"spacing": {
+			"padding": true,
+			"margin": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"fontWeight": true,
+			"letterSpacing": true,
+			"textTransform": true,
+			"fontStyle": true,
+			"textDecoration": true
+		}
+	},
+	"selectors": {
+		"typography": {
+			"root": ".content"
+		}
+	},
+	"textdomain": "portfolio-block",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js"
+}

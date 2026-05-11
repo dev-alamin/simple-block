@@ -1,0 +1,44 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "simple-block/accordion-item",
+    "title": "Accordion Item",
+    "version": "1.0.0",
+    "category": "widgets",
+    "keywords": [
+        "accordion",
+        "tab"
+    ],
+    "parent": [
+        "simple-block/simple-accordion"
+    ],
+    "description": "A simple block for creating beautiful accordion",
+    "supports": {
+        "html": false,
+        "spacing": {
+            "margin": true,
+            "padding": true
+        },
+        "interactivity": true
+    },
+    "attributes": {
+        "id": {
+            "type": "string"
+        },
+        "title": {
+            "type": "string",
+            "default": "",
+            "selector": ".accordion-title"
+        },
+        "content": {
+            "type": "string",
+            "default": "",
+            "selector": ".accordion-content"
+        }
+    },
+    "textdomain": "simple-block",
+    "editorStyle": "file:./index.css",
+    "editorScript": "file:./index.js",
+    "style": "file:./style-index.css",
+    "viewScriptModule": "file:./view.js"
+}

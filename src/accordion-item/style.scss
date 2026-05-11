@@ -1,0 +1,120 @@
+// Variables for easy customization
+$accordion-border: #e2e8f0;
+$accordion-bg-hover: #f8fafc;
+$accordion-active-color: #2563eb;
+$transition-speed: 0.35s;
+
+.wp-block-simple-block-simple-accordion {
+    overflow: hidden;
+    margin: 1.5rem 0;
+    font-family: sans-serif;
+
+    // The Child Item
+    .wp-block-simple-block-accordion-item {
+        border-radius: 8px;
+        border-bottom: 1px solid $accordion-border;
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        // Title / Trigger
+        .accordion-title {
+            margin: 0;
+            padding: .35rem;
+            cursor: pointer;
+            // background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background $transition-speed ease;
+            user-select: none;
+
+            // Optional: Add a chevron icon via CSS
+            &::after {
+                content: '→'; // Or use an SVG/icon font
+                font-size: 0.8rem;
+                transition: transform $transition-speed ease;
+                color: #64748b;
+            }
+
+            // Rotate icon when open (aria-expanded is controlled by your data-wp-bind)
+            &[aria-expanded="true"] {
+                // color: $accordion-active-color;
+                &::after {
+                    transform: rotate(90deg);
+                }
+            }
+        }
+
+        // The Hidden Content Container
+        .accordion-content {
+            display: grid;
+            grid-template-rows: 0fr; // Collapsed
+            transition: grid-template-rows $transition-speed ease-out;
+            overflow: hidden;
+            // background-color: #fff;
+
+            // When Interactivity API adds .is-open
+            &.is-open {
+                grid-template-rows: 1fr; // Expanded
+                margin-top: 10px;
+            }
+
+            // The Inner Wrapper (Mandatory for the animation to work)
+            > div {
+                min-height: 0;
+                visibility: hidden;
+                transition: visibility $transition-speed;
+                padding: 0 1.25rem 0 .35rem;
+            }
+
+            &.is-open > div {
+                visibility: visible;
+                padding: 0 1.25rem .25rem 0.35rem
+            }
+        }
+    }
+
+    .wp-block-simple-block-accordion-item {
+        // 1. Transition makes the color change smooth
+        transition: background-color 0.3s ease, color 0.3s ease;
+        box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        margin-bottom: 15px !important;
+        border: 1px solid #e2e8f0;
+
+        // 2. Hover State
+        &:hover {
+            background-color: var(--acc-hover-bg);
+            
+            .accordion-title {
+                color: var(--acc-hover-heading);
+            }
+            .inner-content{
+                color: var(--acc-hover-content);
+            }
+        }
+
+        // 3. Active State (Applied via Interactivity API)
+        &.is-active {
+            background-color: var(--acc-active-bg) !important; 
+            
+            .accordion-title {
+                color: var(--acc-active-heading);
+            }
+            .inner-content{
+                color: var(--acc-active-content);
+            }
+        }
+    }
+
+    // Ensure the typography is applied
+    .accordion-title {
+        font-size: var(--acc-heading-size, 22px);
+    }
+    .inner-content {
+        font-size: var(--acc-content-size, 14px);
+        color: var(--acc-active-content);
+    }
+}
+

@@ -1,0 +1,90 @@
+/*!******************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/accordion-item/style.scss ***!
+  \******************************************************************************************************************************************************************************************************************************************************/
+@charset "UTF-8";
+.wp-block-simple-block-simple-accordion {
+  overflow: hidden;
+  margin: 1.5rem 0;
+  font-family: sans-serif;
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item {
+  border-radius: 8px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item:last-child {
+  border-bottom: none;
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item .accordion-title {
+  margin: 0;
+  padding: 0.35rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.35s ease;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item .accordion-title::after {
+  content: "→";
+  font-size: 0.8rem;
+  transition: transform 0.35s ease;
+  color: #64748b;
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item .accordion-title[aria-expanded=true]::after {
+  transform: rotate(90deg);
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item .accordion-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s ease-out;
+  overflow: hidden;
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item .accordion-content.is-open {
+  grid-template-rows: 1fr;
+  margin-top: 10px;
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item .accordion-content > div {
+  min-height: 0;
+  visibility: hidden;
+  transition: visibility 0.35s;
+  padding: 0 1.25rem 0 0.35rem;
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item .accordion-content.is-open > div {
+  visibility: visible;
+  padding: 0 1.25rem 0.25rem 0.35rem;
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item {
+  transition: background-color 0.3s ease, color 0.3s ease;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  margin-bottom: 15px !important;
+  border: 1px solid #e2e8f0;
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item:hover {
+  background-color: var(--acc-hover-bg);
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item:hover .accordion-title {
+  color: var(--acc-hover-heading);
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item:hover .inner-content {
+  color: var(--acc-hover-content);
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item.is-active {
+  background-color: var(--acc-active-bg) !important;
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item.is-active .accordion-title {
+  color: var(--acc-active-heading);
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item.is-active .inner-content {
+  color: var(--acc-active-content);
+}
+.wp-block-simple-block-simple-accordion .accordion-title {
+  font-size: var(--acc-heading-size, 22px);
+}
+.wp-block-simple-block-simple-accordion .inner-content {
+  font-size: var(--acc-content-size, 14px);
+  color: var(--acc-active-content);
+}
+
+/*# sourceMappingURL=style-index.css.map*/

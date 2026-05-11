@@ -1,0 +1,1 @@
+{"version":3,"file":"accordion-item/view.js","mappings":";;;AAAAA,OAAO,CAACC,GAAG,CAAC,wBAAwB,CAAC,C","sources":["webpack://simple-block/./src/accordion-item/view.js"],"sourcesContent":["console.log('Hello from child block');"],"names":["console","log"],"sourceRoot":""}

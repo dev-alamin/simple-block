@@ -1,0 +1,63 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "simple-block/block-one",
+  "version": "0.1.0",
+  "title": "Simple Block",
+  "category": "widgets",
+  "icon": "smiley",
+  "keywords": [
+    "simple",
+    "gutenberg"
+  ],
+  "description": "Example block scaffolded with Create Block tool.",
+  "example": {},
+  "supports": {
+    "html": false,
+    "color": {
+      "background": true,
+      "text": true
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true,
+      "fontWeight": true,
+      "letterSpacing": true,
+      "textTransform": true,
+      "fontStyle": true,
+      "textDecoration": true
+    }
+  },
+  "selectors": {
+    "typography": {
+      "root": ".content"
+    }
+  },
+  "attributes": {
+    "avatarUrl": {
+      "default": "",
+      "type": "string"
+    },
+    "avatar": {
+      "default": "",
+      "type": "string"
+    },
+    "title": {
+      "default": "Put the title...",
+      "type": "string"
+    },
+    "desc": {
+      "default": "",
+      "type": "string"
+    }
+  },
+  "textdomain": "simple-block",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScriptModule": "file:./view.js"
+}

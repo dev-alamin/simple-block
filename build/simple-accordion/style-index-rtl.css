@@ -1,0 +1,38 @@
+/*!********************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/simple-accordion/style.scss ***!
+  \********************************************************************************************************************************************************************************************************************************************************/
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item {
+  margin: 0;
+  padding: 10px;
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item h4 {
+  margin: 0;
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item:hover {
+  background-color: var(--acc-hover-bg);
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item:hover .accordion-title {
+  color: var(--acc-hover-heading);
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item:hover .inner-content {
+  color: var(--acc-hover-content);
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item.is-active {
+  background-color: var(--acc-active-bg) !important;
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item.is-active .accordion-title {
+  color: var(--acc-active-heading);
+}
+.wp-block-simple-block-simple-accordion .wp-block-simple-block-accordion-item.is-active .inner-content {
+  color: var(--acc-active-content);
+}
+.wp-block-simple-block-simple-accordion .accordion-title {
+  font-size: var(--acc-heading-size, 22px);
+}
+.wp-block-simple-block-simple-accordion .inner-content {
+  font-size: var(--acc-content-size, 14px);
+  color: var(--acc-active-content);
+}

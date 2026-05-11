@@ -1,0 +1,65 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "simple-block/simple-accordion",
+  "title": "Simple Accordion",
+  "version": "1.0.0",
+  "category": "widgets",
+  "keywords": [
+    "accordion",
+    "tab"
+  ],
+  "description": "A simple block for creating beautiful accordion",
+  "supports": {
+    "html": false,
+    "interactivity": true,
+    "spacing": {
+      "padding": true,
+      "margin": true
+    },
+    "color": {
+      "text": true,
+      "link": true,
+      "background": true
+    }
+  },
+  "attributes": {
+    "headingTextSize": {
+      "type": "number",
+      "default": "22"
+    },
+    "contentTextSize": {
+      "type": "number",
+      "default": "14"
+    },
+    "hoverBgColor": {
+      "type": "string",
+      "default": "#fff"
+    },
+    "activeBgColor": {
+      "type": "string",
+      "default": ""
+    },
+    "hoverHeadingColor": {
+      "type": "string",
+      "default": ""
+    },
+    "activeHeadingColor": {
+      "type": "string",
+      "default": ""
+    },
+    "hoverContentColor": {
+      "type": "string",
+      "default": ""
+    },
+    "activeContentColor": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "textdomain": "simple-block",
+  "editorStyle": "file:./index.css",
+  "editorScript": "file:./index.js",
+  "style": "file:./style-index.css",
+  "viewScriptModule": "file:./view.js"
+}

@@ -1,0 +1,20 @@
+{
+    "name": "simple-block/portfolio-item",
+    "title": "Portfolio Item",
+    "parent": ["simple-block/portfolio"],
+    "usesContext": ["sblock/gridCategory"],
+    "supports": {
+        "color": {
+            "background": true,
+            "text": true
+        },
+        "typography": {
+            "fontSize": true,
+            "lineHeight": true
+        },
+        "spacing": {
+            "padding": true,
+            "margin": true
+        }
+    }
+}
