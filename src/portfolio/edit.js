@@ -23,7 +23,7 @@ const Edit = ({ attributes, setAttributes }) => {
     };
 
     if (category) {
-      query.portfolio_category = category;
+      query.sblock_portfolio_category = category;
     }
 
     return {
@@ -34,33 +34,33 @@ const Edit = ({ attributes, setAttributes }) => {
 
   // 2. Fetch Categories for the Sidebar Dropdown
   const categories = useSelect((select) => {
-      const terms = select('core').getEntityRecords('taxonomy', 'sblock_portfolio_category', { per_page: -1 });
-      return terms ? terms.map(term => ({
-          id: term.id,
-          name: term.name,
-          parent: term.parent,
-      })) : [];
+    const terms = select('core').getEntityRecords('taxonomy', 'sblock_portfolio_category', { per_page: -1 });
+    return terms ? terms.map(term => ({
+      id: term.id,
+      name: term.name,
+      parent: term.parent,
+    })) : [];
   }, []);
 
   // 1. Format for categorySuggestions (An object keyed by name)
-const categoriesMap = useSelect((select) => {
+  const categoriesMap = useSelect((select) => {
     const terms = select('core').getEntityRecords('taxonomy', 'sblock_portfolio_category', { per_page: -1 });
     if (!terms) return {};
 
     const map = {};
     terms.forEach(term => {
-        map[term.name] = {
-            id: term.id,
-            name: term.name,
-            parent: term.parent
-        };
+      map[term.name] = {
+        id: term.id,
+        name: term.name,
+        parent: term.parent
+      };
     });
     return map;
-}, []);
+  }, []);
 
-// 2. Format selectedCategories (An array of objects)
-// You'll need to update your block.json attribute "category" to an array type
-const selectedCats = attributes.categoriesArray || [];
+  // 2. Format selectedCategories (An array of objects)
+  // You'll need to update your block.json attribute "category" to an array type
+  const selectedCats = attributes.categoriesArray || [];
 
   // 3. Loading Sate
   if (!hasResolved) {
@@ -79,13 +79,13 @@ const selectedCats = attributes.categoriesArray || [];
     <div {...blockProps}>
       <InspectorControls>
         <PanelBody title='Grid Settings'>
-<QueryControls
-    numberOfItems={postsPerPage}
-    onNumberOfItemsChange={(val) => setAttributes({ postsPerPage: val })}
-    categoriesList={categories} // Fixed prop name
-    selectedCategoryId={category ? parseInt(category, 10) : undefined}
-    onCategoryChange={(val) => setAttributes({ category: val.toString() })}
-/>
+          <QueryControls
+            numberOfItems={postsPerPage}
+            onNumberOfItemsChange={(val) => setAttributes({ postsPerPage: val })}
+            categoriesList={categories} // Fixed prop name
+            selectedCategoryId={category ? parseInt(category, 10) : undefined}
+            onCategoryChange={(val) => setAttributes({ category: val.toString() })}
+          />
         </PanelBody>
       </InspectorControls>
 

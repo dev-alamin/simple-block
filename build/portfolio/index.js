@@ -170,7 +170,7 @@ const Edit = ({
       _embed: true // Crucial for getting featured image URLs
     };
     if (category) {
-      query.portfolio_category = category;
+      query.sblock_portfolio_category = category;
     }
     return {
       portfolioItems: select('core').getEntityRecords('postType', 'sblock_portfolio', query),
