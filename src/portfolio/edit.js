@@ -109,20 +109,49 @@ const Edit = ({ attributes, setAttributes }) => {
         gap: '20px'
       }}>
         {portfolioItems?.length > 0 ? (
-          portfolioItems.map((post) => (
-            <div key={post.id}>
-              {post._embedded?.['wp:featuredmedia']?.[0]?.source_url ? (
-                <img
-                  src={post._embedded['wp:featuredmedia'][0].source_url}
-                  style={{ width: '100%', height: '200px', objectFit: 'cover' }}
-                />
+          portfolioItems.map((post) => {
+            const projectMeta = post.meta || {};
 
-              ) : (
-                <div style={{ height: '200px', background: '#eee' }} />
-              )}
-              <h4>{post.title.rendered}</h4>
-            </div>
-          ))
+            return (
+              <div key={post.id}>
+                {post._embedded?.['wp:featuredmedia']?.[0]?.source_url ? (
+                  <img
+                    src={post._embedded['wp:featuredmedia'][0].source_url}
+                    style={{ width: '100%', height: '200px', objectFit: 'cover' }}
+                  />
+
+                ) : (
+                  <div style={{ height: '200px', background: '#eee' }} />
+                )}
+                <h4>{post.title.rendered}</h4>
+
+                {/* Displaying the custom meta field  */}
+                <div className='portfolio-meta-info' style={{
+                  fontSize: '13px',
+                  color: '#666'
+                }}>
+                  {projectMeta.client_name && (
+                    <p style={{ margin: '0' }}><strong>Client Name: </strong> {projectMeta.client_name}</p>
+                  )}
+
+                  {projectMeta.project_completion_date && (
+                    <p style={{ margin: '0' }}><strong>Completion Date: </strong> {new Date(projectMeta.project_completion_date).toLocaleDateString()}</p>
+                  )}
+
+                  {projectMeta.project_url && (
+                    <a
+                      href={projectMeta.project_url}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      style={{ display: 'inline-block', marginTop: '5px', color: '#007cba' }}
+                    >
+                      View Project →
+                    </a>
+                  )}
+                </div>
+              </div>
+            )
+          })
         ) : (
           <p>No project found</p>
         )}

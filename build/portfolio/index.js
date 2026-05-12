@@ -263,23 +263,57 @@ const Edit = ({
         gridTemplateColumns: `repeat(3, 1fr)`,
         gap: '20px'
       },
-      children: portfolioItems?.length > 0 ? portfolioItems.map(post => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-        children: [post._embedded?.['wp:featuredmedia']?.[0]?.source_url ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
-          src: post._embedded['wp:featuredmedia'][0].source_url,
-          style: {
-            width: '100%',
-            height: '200px',
-            objectFit: 'cover'
-          }
-        }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
-          style: {
-            height: '200px',
-            background: '#eee'
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h4", {
-          children: post.title.rendered
-        })]
-      }, post.id)) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("p", {
+      children: portfolioItems?.length > 0 ? portfolioItems.map(post => {
+        const projectMeta = post.meta || {};
+        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+          children: [post._embedded?.['wp:featuredmedia']?.[0]?.source_url ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("img", {
+            src: post._embedded['wp:featuredmedia'][0].source_url,
+            style: {
+              width: '100%',
+              height: '200px',
+              objectFit: 'cover'
+            }
+          }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+            style: {
+              height: '200px',
+              background: '#eee'
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h4", {
+            children: post.title.rendered
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+            className: "portfolio-meta-info",
+            style: {
+              fontSize: '13px',
+              color: '#666'
+            },
+            children: [projectMeta.client_name && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("p", {
+              style: {
+                margin: '0'
+              },
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("strong", {
+                children: "Client Name: "
+              }), " ", projectMeta.client_name]
+            }), projectMeta.project_completion_date && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("p", {
+              style: {
+                margin: '0'
+              },
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("strong", {
+                children: "Completion Date: "
+              }), " ", new Date(projectMeta.project_completion_date).toLocaleDateString()]
+            }), projectMeta.project_url && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("a", {
+              href: projectMeta.project_url,
+              target: "_blank",
+              rel: "noopener noreferrer",
+              style: {
+                display: 'inline-block',
+                marginTop: '5px',
+                color: '#007cba'
+              },
+              children: "View Project \u2192"
+            })]
+          })]
+        }, post.id);
+      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("p", {
         children: "No project found"
       })
     })]
