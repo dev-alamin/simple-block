@@ -101,7 +101,8 @@ return array(
 				'textTransform' => true,
 				'fontStyle' => true,
 				'textDecoration' => true
-			)
+			),
+			'interactivity' => true
 		),
 		'selectors' => array(
 			'typography' => array(
@@ -112,7 +113,8 @@ return array(
 		'editorScript' => 'file:./index.js',
 		'editorStyle' => 'file:./index.css',
 		'style' => 'file:./style-index.css',
-		'viewScriptModule' => 'file:./view.js'
+		'viewScriptModule' => 'file:./view.js',
+		'render' => './render.php'
 	),
 	'portfolio-item' => array(
 		'name' => 'simple-block/portfolio-item',

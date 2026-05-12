@@ -110,6 +110,7 @@ const Edit = ({ attributes, setAttributes }) => {
       }}>
         {portfolioItems?.length > 0 ? (
           portfolioItems.map((post) => {
+            // Get project meta, as post contains full post object
             const projectMeta = post.meta || {};
 
             return (
