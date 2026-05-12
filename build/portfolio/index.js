@@ -156,7 +156,9 @@ const Edit = ({
 }) => {
   const {
     category,
-    postsPerPage
+    postsPerPage,
+    headingColor,
+    cardBackground
   } = attributes;
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps)();
 
@@ -221,11 +223,10 @@ const Edit = ({
       })
     });
   }
-  console.log(categories);
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
     ...blockProps,
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.InspectorControls, {
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.PanelBody, {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.InspectorControls, {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.PanelBody, {
         title: "Grid Settings",
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.QueryControls, {
           numberOfItems: postsPerPage,
@@ -239,7 +240,22 @@ const Edit = ({
             category: val.toString()
           })
         })
-      })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.PanelColorSettings, {
+        title: "Card Styles",
+        colorSettings: [{
+          value: headingColor,
+          onChange: val => setAttributes({
+            headingColor: val
+          }),
+          label: 'Heading Color'
+        }, {
+          value: cardBackground,
+          onChange: val => setAttributes({
+            cardBackground: val
+          }),
+          label: 'Card Background'
+        }]
+      })]
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
       className: "portfolio-grid-preview",
       style: {
@@ -401,7 +417,7 @@ module.exports = window["wp"]["plugins"];
   \**********************************/
 (module) {
 
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"simple-block/portfolio","version":"1.0.0","title":"Portfolio Grid","category":"widgets","icon":"smiley","keywords":["portfolio","grid"],"description":"A block to display a portfolio grid.","example":{},"attributes":{"category":{"type":"number","default":0},"postsPerPage":{"type":"number","default":5}},"supports":{"html":false,"color":{"background":true,"text":true},"spacing":{"padding":true,"margin":true},"typography":{"fontSize":true,"lineHeight":true,"fontWeight":true,"letterSpacing":true,"textTransform":true,"fontStyle":true,"textDecoration":true}},"selectors":{"typography":{"root":".content"}},"textdomain":"portfolio-block","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","viewScriptModule":"file:./view.js"}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"simple-block/portfolio","version":"1.0.0","title":"Portfolio Grid","category":"widgets","icon":"smiley","keywords":["portfolio","grid"],"description":"A block to display a portfolio grid.","example":{},"attributes":{"category":{"type":"number","default":0},"postsPerPage":{"type":"number","default":5},"headingColor":{"type":"string","default":"#000000"},"cardBackground":{"type":"string","default":"#ffffff"}},"providesContext":{"sblock/headingColor":"headingColor","sblock/cardBackground":"cardBackground"},"supports":{"html":false,"color":{"background":true,"text":true},"spacing":{"padding":true,"margin":true},"typography":{"fontSize":true,"lineHeight":true,"fontWeight":true,"letterSpacing":true,"textTransform":true,"fontStyle":true,"textDecoration":true}},"selectors":{"typography":{"root":".content"}},"textdomain":"portfolio-block","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","viewScriptModule":"file:./view.js"}');
 
 /***/ }
 

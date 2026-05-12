@@ -5,7 +5,8 @@
     "simple-block/portfolio"
   ],
   "usesContext": [
-    "sblock/gridCategory"
+    "sblock/headingColor",
+    "sblock/cardBackground"
   ],
   "supports": {
     "color": {

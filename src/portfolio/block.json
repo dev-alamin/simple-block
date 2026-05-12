@@ -6,10 +6,13 @@
 	"title": "Portfolio Grid",
 	"category": "widgets",
 	"icon": "smiley",
-	"keywords": ["portfolio", "grid"],
+	"keywords": [
+		"portfolio",
+		"grid"
+	],
 	"description": "A block to display a portfolio grid.",
 	"example": {},
-	"attributes":{
+	"attributes": {
 		"category": {
 			"type": "number",
 			"default": 0
@@ -17,7 +20,19 @@
 		"postsPerPage": {
 			"type": "number",
 			"default": 5
+		},
+		"headingColor": {
+			"type": "string",
+			"default": "#000000"
+		},
+		"cardBackground": {
+			"type": "string",
+			"default": "#ffffff"
 		}
+	},
+	"providesContext": {
+		"sblock/headingColor": "headingColor",
+		"sblock/cardBackground": "cardBackground"
 	},
 	"supports": {
 		"html": false,

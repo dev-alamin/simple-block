@@ -1,7 +1,8 @@
 import { useSelect } from '@wordpress/data';
 import {
   useBlockProps,
-  InspectorControls
+  InspectorControls,
+  PanelColorSettings
 } from '@wordpress/block-editor';
 import {
   PanelBody,
@@ -12,7 +13,7 @@ import {
 import { __ } from '@wordpress/i18n';
 
 const Edit = ({ attributes, setAttributes }) => {
-  const { category, postsPerPage } = attributes;
+  const { category, postsPerPage, headingColor, cardBackground } = attributes;
   const blockProps = useBlockProps();
 
   // 1. Fetch Portfolio Items
@@ -73,8 +74,6 @@ const Edit = ({ attributes, setAttributes }) => {
     );
   }
 
-  console.log(categories);
-
   return (
     <div {...blockProps}>
       <InspectorControls>
@@ -87,6 +86,21 @@ const Edit = ({ attributes, setAttributes }) => {
             onCategoryChange={(val) => setAttributes({ category: val.toString() })}
           />
         </PanelBody>
+        <PanelColorSettings
+          title="Card Styles"
+          colorSettings={[
+            {
+              value: headingColor,
+              onChange: (val) => setAttributes({ headingColor: val }),
+              label: 'Heading Color',
+            },
+            {
+              value: cardBackground,
+              onChange: (val) => setAttributes({ cardBackground: val }),
+              label: 'Card Background',
+            },
+          ]}
+        />
       </InspectorControls>
 
       <div className='portfolio-grid-preview' style={{

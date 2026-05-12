@@ -69,7 +69,19 @@ return array(
 			'postsPerPage' => array(
 				'type' => 'number',
 				'default' => 5
+			),
+			'headingColor' => array(
+				'type' => 'string',
+				'default' => '#000000'
+			),
+			'cardBackground' => array(
+				'type' => 'string',
+				'default' => '#ffffff'
 			)
+		),
+		'providesContext' => array(
+			'sblock/headingColor' => 'headingColor',
+			'sblock/cardBackground' => 'cardBackground'
 		),
 		'supports' => array(
 			'html' => false,
@@ -109,7 +121,8 @@ return array(
 			'simple-block/portfolio'
 		),
 		'usesContext' => array(
-			'sblock/gridCategory'
+			'sblock/headingColor',
+			'sblock/cardBackground'
 		),
 		'supports' => array(
 			'color' => array(

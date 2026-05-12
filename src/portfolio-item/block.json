@@ -2,7 +2,10 @@
     "name": "simple-block/portfolio-item",
     "title": "Portfolio Item",
     "parent": ["simple-block/portfolio"],
-    "usesContext": ["sblock/gridCategory"],
+    "usesContext": [
+        "sblock/headingColor",
+        "sblock/cardBackground"
+    ],
     "supports": {
         "color": {
             "background": true,
