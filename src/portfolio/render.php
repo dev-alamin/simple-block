@@ -80,11 +80,12 @@ if ($query->have_posts()) {
 // Interactivity Context
 // -------------------------------------
 $context = array(
-    'selectedCategory' => (string) $selected_category,
+    'selectedCategory' => $selected_category ? (string) $selected_category : 'all',
     'isLoading'        => false,
     'posts'            => $posts,
     'isModalOpen'      => false,
     'activePost'       => null,
+    'page'             => 1,
 );
 ?>
 
@@ -108,7 +109,7 @@ $context = array(
                     data-wp-on--click="actions.filter"
                     data-wp-class--is-active="callbacks.isActive">
                     <?php echo esc_html($term->name); ?>
-                    <span><?php echo esc_attr($term->count); ?></span>
+                    <span style="opacity: .7;">(<?php echo esc_attr($term->count); ?>)</span>
                 </button>
         <?php endforeach;
         endif; ?>
@@ -165,6 +166,8 @@ $context = array(
 
             </article>
         </template>
+
+        <button data-wp-on--click="actions.loadMore">Load More</button>
 
         <template data-wp-if="!context.posts.length">
             <p class="portfolio-empty">No projects found.</p>
