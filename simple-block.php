@@ -105,3 +105,16 @@ function simple_block_simple_block_block_init() {
 }
 add_action( 'init', 'simple_block_simple_block_block_init' );
 
+add_action( 'rest_api_init', function() {
+    register_rest_field( 'sblock_portfolio', 'gallery_images', [
+        'get_callback' => function( $post ) {
+            $ids = get_post_meta( $post['id'], 'project_gallery', true );
+            return array_map( function( $id ) {
+                return [
+                    'url' => wp_get_attachment_image_url( $id, 'full' ),
+                    'alt' => get_post_meta( $id, '_wp_attachment_image_alt', true ) ?: get_the_title( $id ),
+                ];
+            }, $ids ?: [] );
+        },
+    ] );
+} );

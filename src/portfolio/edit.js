@@ -43,26 +43,6 @@ const Edit = ({ attributes, setAttributes }) => {
     })) : [];
   }, []);
 
-  // 1. Format for categorySuggestions (An object keyed by name)
-  const categoriesMap = useSelect((select) => {
-    const terms = select('core').getEntityRecords('taxonomy', 'sblock_portfolio_category', { per_page: -1 });
-    if (!terms) return {};
-
-    const map = {};
-    terms.forEach(term => {
-      map[term.name] = {
-        id: term.id,
-        name: term.name,
-        parent: term.parent
-      };
-    });
-    return map;
-  }, []);
-
-  // 2. Format selectedCategories (An array of objects)
-  // You'll need to update your block.json attribute "category" to an array type
-  const selectedCats = attributes.categoriesArray || [];
-
   // 3. Loading Sate
   if (!hasResolved) {
     return (

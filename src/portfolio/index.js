@@ -13,15 +13,15 @@ import { useSelect } from '@wordpress/data';
 import { registerBlockType } from '@wordpress/blocks';
 import { useState } from '@wordpress/element';
 
+import './style.scss';
+
 import metadata from './block.json';
-import Save from './save';
 import Edit from './edit';
 
 import PortfolioGallery from './components/PortfolioGallery';
 
 registerBlockType(metadata.name, {
     edit: Edit,
-    save: Save
 });
 
 const PortfolioSettingsPanel = () => {
