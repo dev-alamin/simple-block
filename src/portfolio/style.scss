@@ -25,6 +25,9 @@ $border-color_2: #999;
 /* ------------------------------------
    Buttons
 ------------------------------------- */
+
+.wp-block-simple-block-portfolio{
+	margin: 20px 0;
 .portfolio-filters {
 	display: flex;
 	gap: 8px;
@@ -307,5 +310,81 @@ $border-color_2: #999;
 	&:hover {
 		border-color: $border-color_2;
 		color: $color_2;
+	}
+}
+.search-filter-wrapper{
+	margin-bottom: 1.5rem;
+	display: flex;
+	justify-content: space-between;
+	gap: 8px;
+
+	.search-form{
+		position: relative;
+
+		.clear-search-term{
+			position: absolute;
+			left: 6px;
+			top: 50%;
+			transform: translateY(-50%);
+			background: transparent;
+			border: none;
+			padding: 0;
+		 	display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 4px;
+			cursor: pointer;
+			color: #ddd;
+			
+			transition: color 0.2s;
+
+			&:hover {
+				color: $color_2;
+			}
+			svg{
+				transition: fill 0.2s;
+			}
+		}
+	}
+
+	input[type="text"]{
+		padding: 6px 12px;
+		border: 1px solid #ddd;
+		min-width: 300px;
+		border-radius: 8px;
+		font-size: 13px;
+		font-family: $font-family_1;
+		transition: border-color 0.2s;
+		padding-left: 35px;
+		&:focus {
+			border-color: $border-color_2;
+			outline: none;
+		}
+	}
+
+	input[type="submit"]{
+		padding: 6px 18px;
+		font-family: $font-family_1;
+		font-size: 13px;
+		font-weight: 500;
+		border-radius: 100px;
+		border: 1px solid #ddd;
+		background: transparent;
+		color: $color_1;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		position: absolute;
+		right: 10px;
+		top: 7px;
+		
+		&:hover {
+			color: $color_2;
+			border-color: $border-color_1;
+		}
+	}
+}
+
+	.loadmore-button{
+		margin-top: 25px;
 	}
 }

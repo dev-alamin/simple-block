@@ -1,6 +1,41 @@
 import * as __WEBPACK_EXTERNAL_MODULE__wordpress_interactivity_8e89b257__ from "@wordpress/interactivity";
 /******/ var __webpack_modules__ = ({
 
+/***/ "./src/portfolio/utils.js"
+/*!********************************!*\
+  !*** ./src/portfolio/utils.js ***!
+  \********************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   formatDate: () => (/* binding */ formatDate),
+/* harmony export */   mapPost: () => (/* binding */ mapPost)
+/* harmony export */ });
+const formatDate = raw => {
+  if (!raw) return '';
+  const date = new Date(raw);
+  return isNaN(date) ? raw : date.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+};
+const mapPost = post => ({
+  id: post.id,
+  title: post.title,
+  link: post.link,
+  content: post.excerpt?.rendered ? post.excerpt.rendered.replace(/<[^>]*>/g, '').trim() : '',
+  featured_image_url: post?._embedded?.['wp:featuredmedia']?.[0]?.source_url || '',
+  client: post.meta?.client_name || '',
+  completion_date: formatDate(post.meta?.project_completion_date),
+  project_url: post.meta?.project_url || '',
+  gallery_images: post.gallery_images || [],
+  gallery_count: post.gallery_images?.length || 0
+});
+
+/***/ },
+
 /***/ "@wordpress/interactivity"
 /*!*******************************************!*\
   !*** external "@wordpress/interactivity" ***!
@@ -44,6 +79,23 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__wordpress_interactivity_8e89b257__;
 /******/ }
 /******/ 
 /************************************************************************/
+/******/ /* webpack/runtime/define property getters */
+/******/ (() => {
+/******/ 	// define getter functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 			}
+/******/ 		}
+/******/ 	};
+/******/ })();
+/******/ 
+/******/ /* webpack/runtime/hasOwnProperty shorthand */
+/******/ (() => {
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ })();
+/******/ 
 /******/ /* webpack/runtime/make namespace object */
 /******/ (() => {
 /******/ 	// define __esModule on exports
@@ -64,30 +116,12 @@ var __webpack_exports__ = {};
   \*******************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/interactivity */ "@wordpress/interactivity");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./src/portfolio/utils.js");
+
 
 const BASE_URL = '/devspark/wordpress-backend/wp-json/wp/v2/sblock_portfolio';
 const PER_PAGE = 3;
-const formatDate = raw => {
-  if (!raw) return '';
-  const date = new Date(raw);
-  return isNaN(date) ? raw : date.toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  });
-};
-const mapPost = post => ({
-  id: post.id,
-  title: post.title,
-  link: post.link,
-  content: post.excerpt?.rendered ? post.excerpt.rendered.replace(/<[^>]*>/g, '').trim() : '',
-  featured_image_url: post?._embedded?.['wp:featuredmedia']?.[0]?.source_url || '',
-  client: post.meta?.client_name || '',
-  completion_date: formatDate(post.meta?.project_completion_date),
-  project_url: post.meta?.project_url || '',
-  gallery_images: post.gallery_images || [],
-  gallery_count: post.gallery_images?.length || 0
-});
+let searchTimeout;
 const fetchPosts = async (page, categoryId) => {
   let url = `${BASE_URL}?per_page=${PER_PAGE}&page=${page}&_embed`;
   if (categoryId !== 'all') {
@@ -95,10 +129,10 @@ const fetchPosts = async (page, categoryId) => {
   }
   const response = await fetch(url);
   const data = await response.json();
-  const totalPosts = response.headers.get('X-WP-Total');
-  const totalPages = response.headers.get('X-WP-TotalPages');
+  const totalPosts = Number(response.headers.get('X-WP-Total'));
+  const totalPages = Number(response.headers.get('X-WP-TotalPages'));
   return {
-    data: data.map(mapPost),
+    data: data.map(_utils__WEBPACK_IMPORTED_MODULE_1__.mapPost),
     totalPosts: totalPosts,
     totalPages: totalPages
   };
@@ -118,10 +152,11 @@ const fetchPosts = async (page, categoryId) => {
       } = await fetchPosts(context.page, context.selectedCategory);
       context.posts = data;
       context.isLoading = false;
-      totalPages - context.page === 0 ? context.isLastPage = true : context.isLastPage = false;
+      context.isLastPage = context.page >= totalPages;
     },
     loadMore: async () => {
       const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
+      if (context.isLoading || context.isLastPage) return;
       context.page += 1;
       context.isLoading = true;
       context.isLastPage = false;
@@ -135,9 +170,38 @@ const fetchPosts = async (page, categoryId) => {
       } = await fetchPosts(context.page, context.selectedCategory);
 
       // console.log( 'Remaining pages', totalPages - context.page );
-      totalPages - context.page === 0 ? context.isLastPage = true : context.isLastPage = false;
+      context.isLastPage = context.page >= totalPages;
       context.posts = [...context.posts, ...data];
       context.isLoading = false;
+    },
+    setSearchTerm: async e => {
+      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
+      context.isLoading = true;
+      context.searchTerm = e.target.value;
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(async () => {
+        try {
+          const response = await fetch(`${BASE_URL}?search=${context.searchTerm}&per_page=${PER_PAGE}&_embed`);
+          const data = await response.json();
+          context.posts = data.map(_utils__WEBPACK_IMPORTED_MODULE_1__.mapPost);
+          // console.log('searched posts', data.map(mapPost));
+        } catch (err) {
+          console.log('Getting error to fetch search term: ', err);
+        }
+      }, 300);
+      context.isLoading = false;
+    },
+    clearSearchTerm: async () => {
+      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
+      context.searchTerm = "";
+      try {
+        const response = await fetch(`${BASE_URL}?search=${context.searchTerm}&per_page=${PER_PAGE}&_embed`);
+        const data = await response.json();
+        context.posts = data.map(_utils__WEBPACK_IMPORTED_MODULE_1__.mapPost);
+        console.log('searched posts', data.map(_utils__WEBPACK_IMPORTED_MODULE_1__.mapPost));
+      } catch (err) {
+        console.log('Getting error to fetch search term: ', err);
+      }
     },
     openModal: () => {
       const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();

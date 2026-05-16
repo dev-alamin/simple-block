@@ -19,16 +19,13 @@
 /* ------------------------------------
    Buttons
 ------------------------------------- */
-.wp-block-simple-block-portfolio {
-  margin: 20px 0;
-}
-.wp-block-simple-block-portfolio .portfolio-filters {
+.portfolio-filters {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
   margin-bottom: 2rem;
 }
-.wp-block-simple-block-portfolio .portfolio-filters button {
+.portfolio-filters button {
   font-family: inherit;
   font-size: 13px;
   font-weight: 500;
@@ -40,50 +37,50 @@
   cursor: pointer;
   transition: all 0.2s ease;
 }
-.wp-block-simple-block-portfolio .portfolio-filters button:hover {
+.portfolio-filters button:hover {
   color: #111;
   border-color: #111;
 }
-.wp-block-simple-block-portfolio .portfolio-filters button.is-active {
+.portfolio-filters button.is-active {
   background: #111;
   color: #fff;
   border-color: #111;
 }
-.wp-block-simple-block-portfolio .portfolio-grid {
+.portfolio-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
   transition: opacity 0.3s ease;
 }
-.wp-block-simple-block-portfolio .portfolio-empty {
+.portfolio-empty {
   grid-column: 1/-1;
   text-align: center;
   padding: 3rem;
   color: #888;
   font-size: 14px;
 }
-.wp-block-simple-block-portfolio .portfolio-card {
+.portfolio-card {
   border-radius: 12px;
   border: 1px solid #eee;
   background: #fff;
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.wp-block-simple-block-portfolio .portfolio-card:hover {
+.portfolio-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
 }
-.wp-block-simple-block-portfolio .portfolio-card:hover .portfolio-card__thumb img {
+.portfolio-card:hover .portfolio-card__thumb img {
   transform: scale(1.05);
 }
-.wp-block-simple-block-portfolio .portfolio-card__thumb {
+.portfolio-card__thumb {
   position: relative;
   width: 100%;
   aspect-ratio: 16/10;
   overflow: hidden;
   background: #f5f5f5;
 }
-.wp-block-simple-block-portfolio .portfolio-card__thumb img {
+.portfolio-card__thumb img {
   width: 100%;
   height: 100%;
   -o-object-fit: cover;
@@ -91,10 +88,10 @@
   transition: transform 0.4s ease;
   display: block;
 }
-.wp-block-simple-block-portfolio .portfolio-card__gallery-count {
+.portfolio-card__gallery-count {
   position: absolute;
   bottom: 10px;
-  left: 10px;
+  right: 10px;
   background: rgba(0, 0, 0, 0.5);
   color: #fff;
   font-size: 11px;
@@ -106,22 +103,22 @@
   gap: 4px;
   backdrop-filter: blur(4px);
 }
-.wp-block-simple-block-portfolio .portfolio-card__body {
+.portfolio-card__body {
   padding: 1rem 1.25rem 0.75rem;
 }
-.wp-block-simple-block-portfolio .portfolio-card__title {
+.portfolio-card__title {
   font-size: 15px;
   font-weight: 600;
   color: #111;
   margin: 0 0 0.6rem;
   line-height: 1.4;
 }
-.wp-block-simple-block-portfolio .project-meta {
+.project-meta {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-.wp-block-simple-block-portfolio .project-meta p {
+.project-meta p {
   font-size: 12px;
   color: #888;
   margin: 0;
@@ -129,14 +126,14 @@
   align-items: center;
   gap: 5px;
 }
-.wp-block-simple-block-portfolio .portfolio-card__footer {
+.portfolio-card__footer {
   padding: 0.75rem 1.25rem;
   border-top: 1px solid #f0f0f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.wp-block-simple-block-portfolio .portfolio-card__link {
+.portfolio-card__link {
   font-size: 12px;
   font-weight: 500;
   color: #888;
@@ -151,10 +148,10 @@
   font-family: inherit;
   transition: color 0.2s;
 }
-.wp-block-simple-block-portfolio .portfolio-card__link:hover {
+.portfolio-card__link:hover {
   color: #111;
 }
-.wp-block-simple-block-portfolio .portfolio-card__open-modal {
+.portfolio-card__open-modal {
   font-size: 12px;
   font-weight: 500;
   color: #888;
@@ -169,11 +166,11 @@
   font-family: inherit;
   transition: color 0.2s;
 }
-.wp-block-simple-block-portfolio .portfolio-card__open-modal:hover {
+.portfolio-card__open-modal:hover {
   color: #111;
   background: none;
 }
-.wp-block-simple-block-portfolio .portfolio-modal-backdrop {
+.portfolio-modal-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.55);
@@ -185,12 +182,12 @@
   backdrop-filter: blur(3px);
   display: none;
 }
-.wp-block-simple-block-portfolio .portfolio-modal__body {
+.portfolio-modal__body {
   padding: 1.25rem 1.5rem;
   font-size: 14px;
   color: #888;
 }
-.wp-block-simple-block-portfolio .portfolio-modal {
+.portfolio-modal {
   background: #fff;
   border-radius: 14px;
   width: 100%;
@@ -199,7 +196,7 @@
   overflow-y: auto;
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
 }
-.wp-block-simple-block-portfolio .portfolio-modal__header {
+.portfolio-modal__header {
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid #f0f0f0;
   display: flex;
@@ -211,14 +208,14 @@
   background: #fff;
   z-index: 1;
 }
-.wp-block-simple-block-portfolio .portfolio-modal__title {
+.portfolio-modal__title {
   font-size: 17px;
   font-weight: 600;
   color: #111;
   margin: 0;
   line-height: 1.4;
 }
-.wp-block-simple-block-portfolio .portfolio-modal__close {
+.portfolio-modal__close {
   background: #f5f5f5;
   border: none;
   border-radius: 50%;
@@ -232,28 +229,28 @@
   flex-shrink: 0;
   transition: background 0.2s;
 }
-.wp-block-simple-block-portfolio .portfolio-modal__close:hover {
+.portfolio-modal__close:hover {
   background: #eee;
   color: #111;
 }
-.wp-block-simple-block-portfolio .portfolio-modal__gallery {
+.portfolio-modal__gallery {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 4px;
   padding: 1.25rem 1.5rem;
 }
-.wp-block-simple-block-portfolio .portfolio-modal__gallery img {
+.portfolio-modal__gallery img {
   width: 100%;
   border-radius: 8px;
   display: block;
 }
-.wp-block-simple-block-portfolio .portfolio-modal__meta {
+.portfolio-modal__meta {
   padding: 0 1.5rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-.wp-block-simple-block-portfolio .portfolio-modal__meta p {
+.portfolio-modal__meta p {
   font-size: 13px;
   color: #666;
   margin: 0;
@@ -261,13 +258,13 @@
   align-items: center;
   gap: 8px;
 }
-.wp-block-simple-block-portfolio .portfolio-modal__footer {
+.portfolio-modal__footer {
   padding: 1rem 1.5rem;
   border-top: 1px solid #f0f0f0;
   display: flex;
   gap: 8px;
 }
-.wp-block-simple-block-portfolio .btn-primary {
+.btn-primary {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -283,10 +280,10 @@
   text-decoration: none;
   transition: background 0.2s;
 }
-.wp-block-simple-block-portfolio .btn-primary:hover {
+.btn-primary:hover {
   background: #333;
 }
-.wp-block-simple-block-portfolio .btn-secondary {
+.btn-secondary {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -301,74 +298,9 @@
   cursor: pointer;
   transition: all 0.2s;
 }
-.wp-block-simple-block-portfolio .btn-secondary:hover {
+.btn-secondary:hover {
   border-color: #999;
   color: #111;
 }
-.wp-block-simple-block-portfolio .search-filter-wrapper {
-  margin-bottom: 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-}
-.wp-block-simple-block-portfolio .search-filter-wrapper .search-form {
-  position: relative;
-}
-.wp-block-simple-block-portfolio .search-filter-wrapper .search-form .clear-search-term {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  border: none;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  cursor: pointer;
-  color: #ddd;
-  transition: color 0.2s;
-}
-.wp-block-simple-block-portfolio .search-filter-wrapper .search-form .clear-search-term:hover {
-  color: #111;
-}
-.wp-block-simple-block-portfolio .search-filter-wrapper .search-form .clear-search-term svg {
-  transition: fill 0.2s;
-}
-.wp-block-simple-block-portfolio .search-filter-wrapper input[type=text] {
-  padding: 6px 12px;
-  border: 1px solid #ddd;
-  min-width: 300px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-family: inherit;
-  transition: border-color 0.2s;
-  padding-right: 35px;
-}
-.wp-block-simple-block-portfolio .search-filter-wrapper input[type=text]:focus {
-  border-color: #999;
-  outline: none;
-}
-.wp-block-simple-block-portfolio .search-filter-wrapper input[type=submit] {
-  padding: 6px 18px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 500;
-  border-radius: 100px;
-  border: 1px solid #ddd;
-  background: transparent;
-  color: #888;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  position: absolute;
-  left: 10px;
-  top: 7px;
-}
-.wp-block-simple-block-portfolio .search-filter-wrapper input[type=submit]:hover {
-  color: #111;
-  border-color: #111;
-}
-.wp-block-simple-block-portfolio .loadmore-button {
-  margin-top: 25px;
-}
+
+/*# sourceMappingURL=style-view.css.map*/

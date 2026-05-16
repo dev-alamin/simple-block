@@ -96,26 +96,73 @@ $context = array(
     data-wp-context="<?php echo esc_attr(wp_json_encode($context)); ?>">
 
     <!-- Filter Navigation -->
-    <nav class="portfolio-filters">
-        <button
-            value="all"
-            data-wp-on--click="actions.filter"
-            data-wp-class--is-active="callbacks.isActive">All</button>
+    <div class="search-filter-wrapper">
+        <nav class="portfolio-filters">
+            <button
+                value="all"
+                data-wp-on--click="actions.filter"
+                data-wp-class--is-active="callbacks.isActive">All</button>
 
-        <?php
-        if (! is_wp_error($terms)) :
-            foreach ($terms as $term) : ?>
-                <button
-                    value="<?php echo esc_attr($term->term_id); ?>"
-                    data-wp-on--click="actions.filter"
-                    data-wp-class--is-active="callbacks.isActive">
-                    <?php echo esc_html($term->name); ?>
-                    <span style="opacity: .7;">(<?php echo esc_attr($term->count); ?>)</span>
-                </button>
-        <?php endforeach;
-        endif; ?>
+            <?php
+            if (! is_wp_error($terms)) :
+                foreach ($terms as $term) : ?>
+                    <button
+                        value="<?php echo esc_attr($term->term_id); ?>"
+                        data-wp-on--click="actions.filter"
+                        data-wp-class--is-active="callbacks.isActive">
+                        <?php echo esc_html($term->name); ?>
+                        <span style="opacity: .7;">(<?php echo esc_attr($term->count); ?>)</span>
+                    </button>
+            <?php endforeach;
+            endif; ?>
 
-    </nav>
+        </nav>
+
+        <!-- Search area  -->
+        <div class="search-wraper">
+            <form class="search-form" onsubmit="return false;">
+                <button class="clear-search-term" data-wp-on--click="actions.clearSearchTerm">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                    >
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        />
+
+                        <path
+                            d="M8 8L16 16"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                        />
+
+                        <path
+                            d="M16 8L8 16"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                        />
+                    </svg>
+                </button>   
+                <input
+                    type="text"
+                    placeholder="Search projects..."
+                    data-wp-on--input="actions.setSearchTerm"
+                    data-wp-bind--value="context.searchTerm" />
+
+                <input type="submit" value="Search" data-wp-on--click="actions.setSearchTerm" />
+            </form>
+        </div>
+
+    </div>
 
     <!-- Portfolio Grid -->
     <!-- Portfolio Grid -->
@@ -168,12 +215,13 @@ $context = array(
             </article>
         </template>
 
-        <button data-wp-on--click="actions.loadMore" data-wp-bind--hidden="callbacks.setIsLastPage">Load More</button>
-
+        
         <template data-wp-if="!context.posts.length">
             <p class="portfolio-empty">No projects found.</p>
         </template>
     </div>
+
+    <button class="loadmore-button" data-wp-on--click="actions.loadMore" data-wp-bind--hidden="callbacks.setIsLastPage">Load More</button>
 
     <!-- Modal — outside the loop, no nesting problem -->
     <div
