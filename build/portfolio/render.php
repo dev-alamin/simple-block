@@ -86,6 +86,7 @@ $context = array(
     'isModalOpen'      => false,
     'activePost'       => null,
     'page'             => 1,
+    'isLastPage'        => false,
 );
 ?>
 
@@ -167,7 +168,7 @@ $context = array(
             </article>
         </template>
 
-        <button data-wp-on--click="actions.loadMore">Load More</button>
+        <button data-wp-on--click="actions.loadMore" data-wp-bind--hidden="callbacks.setIsLastPage">Load More</button>
 
         <template data-wp-if="!context.posts.length">
             <p class="portfolio-empty">No projects found.</p>

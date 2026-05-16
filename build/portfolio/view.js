@@ -95,11 +95,13 @@ const fetchPosts = async (page, categoryId) => {
   }
   const response = await fetch(url);
   const data = await response.json();
-  console.log('total posts:', response.headers.get('X-WP-Total'));
-  console.log('total pages:', response.headers.get('X-WP-TotalPages'));
-  console.log('fetching url:', url); // add this
-
-  return data.map(mapPost);
+  const totalPosts = response.headers.get('X-WP-Total');
+  const totalPages = response.headers.get('X-WP-TotalPages');
+  return {
+    data: data.map(mapPost),
+    totalPosts: totalPosts,
+    totalPages: totalPages
+  };
 };
 (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.store)('sblock-portfolio', {
   actions: {
@@ -108,21 +110,33 @@ const fetchPosts = async (page, categoryId) => {
       const categoryId = event.currentTarget.value;
       context.selectedCategory = categoryId;
       context.isLoading = true;
+      context.isLastPage = false;
       context.page = 1;
-      context.posts = await fetchPosts(context.page, context.selectedCategory);
+      const {
+        data,
+        totalPages
+      } = await fetchPosts(context.page, context.selectedCategory);
+      context.posts = data;
       context.isLoading = false;
+      totalPages - context.page === 0 ? context.isLastPage = true : context.isLastPage = false;
     },
     loadMore: async () => {
       const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
       context.page += 1;
       context.isLoading = true;
-      console.log('fetching page:', context.page); // what page?
+      context.isLastPage = false;
 
-      const loadedPosts = await fetchPosts(context.page, context.selectedCategory);
-      console.log('new posts count:', loadedPosts.length); // how many returned?
-      console.log('new post ids:', loadedPosts.map(p => p.id)); // same ids as page 1?
+      // console.log( 'fetching page:', context.page ); // what page?
 
-      context.posts = [...context.posts, ...loadedPosts];
+      const {
+        data,
+        totalPosts,
+        totalPages
+      } = await fetchPosts(context.page, context.selectedCategory);
+
+      // console.log( 'Remaining pages', totalPages - context.page );
+      totalPages - context.page === 0 ? context.isLastPage = true : context.isLastPage = false;
+      context.posts = [...context.posts, ...data];
       context.isLoading = false;
     },
     openModal: () => {
@@ -147,6 +161,10 @@ const fetchPosts = async (page, categoryId) => {
     }
   },
   callbacks: {
+    setIsLastPage: () => {
+      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
+      return context.isLastPage;
+    },
     modalDisplay: () => {
       const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
       return context.isModalOpen ? 'flex' : 'none';
