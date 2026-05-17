@@ -15,6 +15,7 @@ $args = array(
     'post_type'      => 'sblock_portfolio',
     'posts_per_page' => $posts_per_page ?: 6,
     'post_status'    => 'publish',
+    'no_found_rows' => true,
 );
 
 if (

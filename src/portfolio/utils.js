@@ -21,8 +21,15 @@ export const mapPost = (post) => ( {
     gallery_count: post.gallery_images?.length || 0
 } );
 
+const caches = new Map();
+
 export const fetchPosts = async (BASE_URL, PER_PAGE, params = {}) => {
     const { page = 1, category = 'all', search = "" } = params;
+
+    const key = JSON.stringify( params );
+    if( caches.has( key ) ) {
+        return caches.get( key );
+    }
 
     let url = `${BASE_URL}?per_page=${PER_PAGE}&page=${page}&_embed`;
 
@@ -35,14 +42,15 @@ export const fetchPosts = async (BASE_URL, PER_PAGE, params = {}) => {
     }
 
     try {
-
         const response = await fetch(url);
         const data = await response.json();
-
+        const mapped = data?.map( mapPost ) || [];
         const totalPages = Number(response.headers.get('X-WP-TotalPages'));
 
+        caches.set( key, { data: mapped, totalPages } );
+
         return {
-            data: data?.map(mapPost),
+            data: mapped,
             totalPages: totalPages
         }
     } catch (err) {

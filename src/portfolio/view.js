@@ -46,13 +46,13 @@ const { state } = store('sblock-portfolio', {
 
             searchTimeout = setTimeout(async () => {
                 try {
-
                     const { data, totalPages } = await fetchPosts(state.baseUrl, state.perPage, state.query);
                     state.posts = data;
                     state.isLastPage = state.query.page >= totalPages;
                 } catch (err) {
                     console.log('Getting error to fetch search term: ', err);
                 }
+
                 state.isLoading = false;
             }, 300);
 
@@ -102,15 +102,12 @@ const { state } = store('sblock-portfolio', {
             const el = context.element ?? event?.currentTarget;
             return el?.value === state.query.category;
         },
-
         gridOpacity: () => {
             return state.isLoading ? '0.4' : '1';
         },
-
         gridPointerEvents: () => {
             return state.isLoading ? 'none' : 'all';
         },
-
         hasGallery: () => {
             return state.activePost?.gallery_images?.length > 0;
         },

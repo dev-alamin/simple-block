@@ -12,7 +12,8 @@
 		"lint:js": "wp-scripts lint-js",
 		"packages-update": "wp-scripts packages-update",
 		"plugin-zip": "wp-scripts plugin-zip",
-		"start": "wp-scripts start --experimental-modules --webpack-copy-php --blocks-manifest"
+		"start": "wp-scripts start --experimental-modules --webpack-copy-php --blocks-manifest",
+		"test": "wp-scripts test-unit-js"
 	},
 	"dependencies": {
 		"@wordpress/block-editor": "latest",
@@ -20,6 +21,8 @@
 		"@wordpress/i18n": "latest"
 	},
 	"devDependencies": {
-		"@wordpress/scripts": "^32.0.0"
+		"@jest/globals": "^30.4.1",
+		"@wordpress/scripts": "^32.0.0",
+		"jest": "^30.4.2"
 	}
 }
