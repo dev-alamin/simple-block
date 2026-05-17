@@ -13,7 +13,7 @@ $heading_color   = $attributes['headingColor'] ?? '#000000';
 
 $args = array(
     'post_type'      => 'sblock_portfolio',
-    'posts_per_page' => $posts_per_page ?: 10,
+    'posts_per_page' => $posts_per_page ?: 6,
     'post_status'    => 'publish',
 );
 
@@ -76,17 +76,27 @@ if ($query->have_posts()) {
     wp_reset_postdata();
 }
 
+wp_interactivity_state( 'sblock-portfolio', [
+    'baseUrl' => rest_url( '/wp/v2/sblock_portfolio' ),
+    'posts'      => $posts,
+    'perPage' => $posts_per_page,
+    'isLoading'  => false,
+    'isLastPage' => false,
+    'isModalOpen' => false,
+    'activePost'  => null,
+    'query'       => [
+        'page'     => 1,
+        'search'   => '',
+        'category' => $selected_category ? (string) $selected_category : 'all',
+    ],
+]);
+
 // -------------------------------------
 // Interactivity Context
 // -------------------------------------
 $context = array(
-    'selectedCategory' => $selected_category ? (string) $selected_category : 'all',
-    'isLoading'        => false,
-    'posts'            => $posts,
-    'isModalOpen'      => false,
-    'activePost'       => null,
-    'page'             => 1,
-    'isLastPage'        => false,
+    'filterValue' => 'all', // for isActive callback per button
+    'item'        => null,  // loop item placeholder
 );
 ?>
 
@@ -156,7 +166,7 @@ $context = array(
                     type="text"
                     placeholder="Search projects..."
                     data-wp-on--input="actions.setSearchTerm"
-                    data-wp-bind--value="context.searchTerm" />
+                    data-wp-bind--value="state.query.search" />
 
                 <input type="submit" value="Search" data-wp-on--click="actions.setSearchTerm" />
             </form>
@@ -170,7 +180,7 @@ $context = array(
         class="portfolio-grid"
         data-wp-style--opacity="callbacks.gridOpacity"
         data-wp-style--pointer-events="callbacks.gridPointerEvents">
-        <template data-wp-each="context.posts">
+        <template data-wp-each="state.posts">
             <article class="portfolio-card">
 
                 <div class="portfolio-card__thumb">
@@ -231,7 +241,7 @@ $context = array(
             <div class="portfolio-modal__header">
                 <h3
                     class="portfolio-modal__title"
-                    data-wp-text="context.activePost.title.rendered"></h3>
+                    data-wp-text="state.activePost.title.rendered"></h3>
                 <button
                     class="portfolio-modal__close"
                     data-wp-on--click="actions.closeModal"
@@ -245,12 +255,12 @@ $context = array(
 
             <!-- Portfolio content  -->
             <div class="portfolio-modal__body">
-                <p data-wp-text="context.activePost.content"></p>
+                <p data-wp-text="state.activePost.content"></p>
             </div>
 
             <!-- Gallery loop here — no nesting conflict since it's outside main loop -->
             <div class="portfolio-modal__gallery">
-                <template data-wp-each="context.activePost.gallery_images">
+                <template data-wp-each="state.activePost.gallery_images">
                     <img
                         data-wp-bind--src="context.item.url"
                         data-wp-bind--alt="context.item.alt" />
@@ -258,18 +268,18 @@ $context = array(
             </div>
 
             <div class="portfolio-modal__meta">
-                <p data-wp-bind--hidden="!context.activePost.client">
+                <p data-wp-bind--hidden="!state.activePost.client">
                     <i class="ti ti-user" aria-hidden="true"></i>
-                    <span data-wp-text="context.activePost.client"></span>
+                    <span data-wp-text="state.activePost.client"></span>
                 </p>
-                <p data-wp-bind--hidden="!context.activePost.completion_date">
+                <p data-wp-bind--hidden="!state.activePost.completion_date">
                     <i class="ti ti-calendar" aria-hidden="true"></i>
-                    <span data-wp-text="context.activePost.completion_date"></span>
+                    <span data-wp-text="state.activePost.completion_date"></span>
                 </p>
             </div>
 
             <div class="portfolio-modal__footer">
-                <a class="btn-primary" data-wp-bind--href="context.activePost.link">
+                <a class="btn-primary" data-wp-bind--href="state.activePost.link">
                     <i class="ti ti-external-link" aria-hidden="true"></i> View full project
                 </a>
                 <button class="btn-secondary" data-wp-on--click="actions.closeModal">

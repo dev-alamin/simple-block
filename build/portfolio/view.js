@@ -9,6 +9,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__wordpress_interactivity_8e89b257__ from "
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   fetchPosts: () => (/* binding */ fetchPosts),
 /* harmony export */   formatDate: () => (/* binding */ formatDate),
 /* harmony export */   mapPost: () => (/* binding */ mapPost)
 /* harmony export */ });
@@ -33,6 +34,32 @@ const mapPost = post => ({
   gallery_images: post.gallery_images || [],
   gallery_count: post.gallery_images?.length || 0
 });
+const fetchPosts = async (BASE_URL, PER_PAGE, params = {}) => {
+  const {
+    page = 1,
+    category = 'all',
+    search = ""
+  } = params;
+  let url = `${BASE_URL}?per_page=${PER_PAGE}&page=${page}&_embed`;
+  if (category !== 'all') {
+    url += `&sblock_portfolio_category=${category}`;
+  }
+  if (search) {
+    url += `&search=${encodeURIComponent(search)}`;
+  }
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    const totalPages = Number(response.headers.get('X-WP-TotalPages'));
+    return {
+      data: data?.map(mapPost),
+      totalPages: totalPages
+    };
+  } catch (err) {
+    console.log('Error getting portfolio posts: ', err);
+    return [];
+  }
+};
 
 /***/ },
 
@@ -119,136 +146,115 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./src/portfolio/utils.js");
 
 
-const BASE_URL = '/devspark/wordpress-backend/wp-json/wp/v2/sblock_portfolio';
-const PER_PAGE = 3;
 let searchTimeout;
-const fetchPosts = async (page, categoryId) => {
-  let url = `${BASE_URL}?per_page=${PER_PAGE}&page=${page}&_embed`;
-  if (categoryId !== 'all') {
-    url += `&sblock_portfolio_category=${categoryId}`;
-  }
-  const response = await fetch(url);
-  const data = await response.json();
-  const totalPosts = Number(response.headers.get('X-WP-Total'));
-  const totalPages = Number(response.headers.get('X-WP-TotalPages'));
-  return {
-    data: data.map(_utils__WEBPACK_IMPORTED_MODULE_1__.mapPost),
-    totalPosts: totalPosts,
-    totalPages: totalPages
-  };
-};
-(0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.store)('sblock-portfolio', {
+const {
+  state
+} = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.store)('sblock-portfolio', {
   actions: {
     filter: async event => {
-      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
       const categoryId = event.currentTarget.value;
-      context.selectedCategory = categoryId;
-      context.isLoading = true;
-      context.isLastPage = false;
-      context.page = 1;
+      state.query.category = categoryId;
+      state.isLoading = true;
+      state.isLastPage = false;
+      state.query.page = 1;
       const {
         data,
         totalPages
-      } = await fetchPosts(context.page, context.selectedCategory);
-      context.posts = data;
-      context.isLoading = false;
-      context.isLastPage = context.page >= totalPages;
+      } = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query);
+      state.posts = data;
+      state.isLastPage = state.query.page >= totalPages;
+      state.isLoading = false;
     },
     loadMore: async () => {
-      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
-      if (context.isLoading || context.isLastPage) return;
-      context.page += 1;
-      context.isLoading = true;
-      context.isLastPage = false;
+      if (state.isLoading || state.isLastPage) return;
+      state.query.page += 1;
+      state.isLoading = true;
+      state.isLastPage = false;
 
-      // console.log( 'fetching page:', context.page ); // what page?
+      // console.log( 'fetching page:', state.page ); // what page?
 
       const {
         data,
-        totalPosts,
         totalPages
-      } = await fetchPosts(context.page, context.selectedCategory);
+      } = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query);
+      console.log(totalPages);
+      state.isLastPage = state.query.page >= totalPages;
 
-      // console.log( 'Remaining pages', totalPages - context.page );
-      context.isLastPage = context.page >= totalPages;
-      context.posts = [...context.posts, ...data];
-      context.isLoading = false;
+      // state.posts = [...state.posts, ...data]; // Append items
+      state.posts = data; // replace items
+      state.isLoading = false;
     },
     setSearchTerm: async e => {
-      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
-      context.isLoading = true;
-      context.searchTerm = e.target.value;
+      state.isLoading = true;
+      state.query.search = e.target.value;
+      state.query.page = 1;
       clearTimeout(searchTimeout);
       searchTimeout = setTimeout(async () => {
         try {
-          const response = await fetch(`${BASE_URL}?search=${context.searchTerm}&per_page=${PER_PAGE}&_embed`);
-          const data = await response.json();
-          context.posts = data.map(_utils__WEBPACK_IMPORTED_MODULE_1__.mapPost);
-          // console.log('searched posts', data.map(mapPost));
+          const {
+            data,
+            totalPages
+          } = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query);
+          state.posts = data;
+          state.isLastPage = state.query.page >= totalPages;
         } catch (err) {
           console.log('Getting error to fetch search term: ', err);
         }
+        state.isLoading = false;
       }, 300);
-      context.isLoading = false;
     },
     clearSearchTerm: async () => {
-      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
-      context.searchTerm = "";
+      if (state.query.search === "") return;
+      state.query.search = "";
+      state.query.page = 1;
       try {
-        const response = await fetch(`${BASE_URL}?search=${context.searchTerm}&per_page=${PER_PAGE}&_embed`);
-        const data = await response.json();
-        context.posts = data.map(_utils__WEBPACK_IMPORTED_MODULE_1__.mapPost);
-        console.log('searched posts', data.map(_utils__WEBPACK_IMPORTED_MODULE_1__.mapPost));
+        const {
+          data
+        } = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query);
+        state.posts = data;
       } catch (err) {
         console.log('Getting error to fetch search term: ', err);
       }
     },
     openModal: () => {
       const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
-      context.activePost = context.item;
-      context.isModalOpen = true;
+      state.activePost = context.item;
+      state.isModalOpen = true;
       document.body.style.overflow = 'hidden';
     },
     closeModal: () => {
-      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
-      context.isModalOpen = false;
-      context.activePost = null;
+      state.isModalOpen = false;
+      state.activePost = null;
       document.body.style.overflow = '';
     },
     closeModalOnBackdrop: event => {
       if (event.target === event.currentTarget) {
-        const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
-        context.isModalOpen = false;
-        context.activePost = null;
+        state.isModalOpen = false;
+        state.activePost = null;
         document.body.style.overflow = '';
       }
     }
   },
   callbacks: {
     setIsLastPage: () => {
-      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
-      return context.isLastPage;
+      return state.isLastPage;
     },
     modalDisplay: () => {
-      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
-      return context.isModalOpen ? 'flex' : 'none';
+      return state.isModalOpen ? 'flex' : 'none';
     },
     isActive: event => {
       const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
       const el = context.element ?? event?.currentTarget;
-      return el?.value === context.selectedCategory;
+      return el?.value === state.query.category;
     },
     gridOpacity: () => {
-      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
-      return context.isLoading ? '0.4' : '1';
+      return state.isLoading ? '0.4' : '1';
     },
     gridPointerEvents: () => {
-      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
-      return context.isLoading ? 'none' : 'all';
+      return state.isLoading ? 'none' : 'all';
     },
     hasGallery: () => {
-      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
-      return context.activePost?.gallery_images?.length > 0;
+      return state.activePost?.gallery_images?.length > 0;
     }
   }
 });

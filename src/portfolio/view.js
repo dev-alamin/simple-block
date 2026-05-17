@@ -1,97 +1,71 @@
-import { store, getContext } from '@wordpress/interactivity';
-import { mapPost, formatDate } from './utils';
-const BASE_URL = '/devspark/wordpress-backend/wp-json/wp/v2/sblock_portfolio';
-const PER_PAGE = 3;
+import { store, getContext, getElement } from '@wordpress/interactivity';
+import { mapPost, formatDate, fetchPosts } from './utils';
+
 let searchTimeout;
 
-const fetchPosts = async (page, categoryId) => {
-
-    let url = `${BASE_URL}?per_page=${PER_PAGE}&page=${page}&_embed`;
-
-    if (categoryId !== 'all') {
-        url += `&sblock_portfolio_category=${categoryId}`;
-    }
-
-    const response = await fetch(url);
-    const data = await response.json();
-
-    const totalPosts = Number(response.headers.get('X-WP-Total'));
-    const totalPages = Number(response.headers.get('X-WP-TotalPages'));
-
-    return {
-        data: data.map(mapPost),
-        totalPosts: totalPosts,
-        totalPages: totalPages
-    }
-}
-
-store('sblock-portfolio', {
+const { state } = store('sblock-portfolio', {
     actions: {
         filter: async (event) => {
-            const context = getContext();
             const categoryId = event.currentTarget.value
 
-            context.selectedCategory = categoryId;
-            context.isLoading = true;
-            context.isLastPage = false;
-            context.page = 1;
+            state.query.category = categoryId;
+            state.isLoading = true;
+            state.isLastPage = false;
+            state.query.page = 1;
 
-            const { data, totalPages } = await fetchPosts(context.page, context.selectedCategory);
-            context.posts = data;
+            const { data, totalPages } = await fetchPosts(state.baseUrl, state.perPage, state.query);
+            state.posts = data;
 
-            context.isLoading = false;
-            context.isLastPage = context.page >= totalPages;
+            state.isLastPage = state.query.page >= totalPages;
+            state.isLoading = false;
         },
         loadMore: async () => {
-            const context = getContext();
+            if (state.isLoading || state.isLastPage) return;
 
-            if (context.isLoading || context.isLastPage) return;
+            state.query.page += 1;
+            state.isLoading = true;
+            state.isLastPage = false;
 
-            context.page += 1;
-            context.isLoading = true;
-            context.isLastPage = false;
+            // console.log( 'fetching page:', state.page ); // what page?
 
-            // console.log( 'fetching page:', context.page ); // what page?
+            const { data, totalPages } = await fetchPosts(state.baseUrl, state.perPage, state.query);
+            console.log(totalPages);
 
-            const { data, totalPosts, totalPages } = await fetchPosts(context.page, context.selectedCategory);
+            state.isLastPage = state.query.page >= totalPages;
 
-            // console.log( 'Remaining pages', totalPages - context.page );
-            context.isLastPage = context.page >= totalPages;
-
-            context.posts = [...context.posts, ...data];
-            context.isLoading = false;
+            // state.posts = [...state.posts, ...data]; // Append items
+            state.posts = data; // replace items
+            state.isLoading = false;
         },
         setSearchTerm: async (e) => {
-            const context = getContext();
-            context.isLoading = true;
-            context.searchTerm = e.target.value;
+            state.isLoading = true;
+            state.query.search = e.target.value;
+            state.query.page = 1;
 
             clearTimeout(searchTimeout);
 
             searchTimeout = setTimeout(async () => {
                 try {
 
-                    const response = await fetch(`${BASE_URL}?search=${context.searchTerm}&per_page=${PER_PAGE}&_embed`);
-                    const data = await response.json();
-                    context.posts = data.map(mapPost);
-                    // console.log('searched posts', data.map(mapPost));
+                    const { data, totalPages } = await fetchPosts(state.baseUrl, state.perPage, state.query);
+                    state.posts = data;
+                    state.isLastPage = state.query.page >= totalPages;
                 } catch (err) {
                     console.log('Getting error to fetch search term: ', err);
                 }
+                state.isLoading = false;
             }, 300);
 
-            context.isLoading = false;
         },
         clearSearchTerm: async () => {
-            const context = getContext();
-            context.searchTerm = "";
+            if (state.query.search === "") return;
+
+            state.query.search = "";
+            state.query.page = 1;
 
             try {
-
-                const response = await fetch(`${BASE_URL}?search=${context.searchTerm}&per_page=${PER_PAGE}&_embed`);
-                const data = await response.json();
-                context.posts = data.map(mapPost);
-                console.log('searched posts', data.map(mapPost));
+                const { data } = await fetchPosts(state.baseUrl, state.perPage, state.query);
+                state.posts = data;
             } catch (err) {
                 console.log('Getting error to fetch search term: ', err);
             }
@@ -99,53 +73,46 @@ store('sblock-portfolio', {
         },
         openModal: () => {
             const context = getContext();
-            context.activePost = context.item;
-            context.isModalOpen = true;
+            state.activePost = context.item;
+            state.isModalOpen = true;
             document.body.style.overflow = 'hidden';
         },
         closeModal: () => {
-            const context = getContext();
-            context.isModalOpen = false;
-            context.activePost = null;
+            state.isModalOpen = false;
+            state.activePost = null;
             document.body.style.overflow = '';
         },
         closeModalOnBackdrop: (event) => {
             if (event.target === event.currentTarget) {
-                const context = getContext();
-                context.isModalOpen = false;
-                context.activePost = null;
+                state.isModalOpen = false;
+                state.activePost = null;
                 document.body.style.overflow = '';
             }
         }
     },
     callbacks: {
         setIsLastPage: () => {
-            const context = getContext();
-            return context.isLastPage;
+            return state.isLastPage;
         },
         modalDisplay: () => {
-            const context = getContext();
-            return context.isModalOpen ? 'flex' : 'none';
+            return state.isModalOpen ? 'flex' : 'none';
         },
         isActive: (event) => {
             const context = getContext();
             const el = context.element ?? event?.currentTarget;
-            return el?.value === context.selectedCategory;
+            return el?.value === state.query.category;
         },
 
         gridOpacity: () => {
-            const context = getContext();
-            return context.isLoading ? '0.4' : '1';
+            return state.isLoading ? '0.4' : '1';
         },
 
         gridPointerEvents: () => {
-            const context = getContext();
-            return context.isLoading ? 'none' : 'all';
+            return state.isLoading ? 'none' : 'all';
         },
 
         hasGallery: () => {
-            const context = getContext();
-            return context.activePost?.gallery_images?.length > 0;
+            return state.activePost?.gallery_images?.length > 0;
         },
     }
 })
