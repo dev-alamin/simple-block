@@ -45,12 +45,14 @@ export const fetchPosts = async (BASE_URL, PER_PAGE, params = {}) => {
         const response = await fetch(url);
         const data = await response.json();
         const mapped = data?.map( mapPost ) || [];
-        const totalPages = Number(response.headers.get('X-WP-TotalPages'));
+        const totalPages = Number( response.headers.get( 'X-WP-TotalPages' ) );
+        const totalPosts = Number( response.headers.get( 'X-WP-Total' ) );
 
-        caches.set( key, { data: mapped, totalPages } );
+        caches.set( key, { data: mapped, totalPages, totalPosts } );
 
         return {
             data: mapped,
+            totalPosts,
             totalPages
         }
     } catch (err) {

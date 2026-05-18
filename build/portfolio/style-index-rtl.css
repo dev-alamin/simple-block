@@ -23,22 +23,22 @@
   margin: 20px 0;
 }
 .wp-block-simple-block-portfolio .portfolio-filters {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 2rem;
+  margin-bottom: 10px;
+  margin-left: 10px;
 }
 .wp-block-simple-block-portfolio .portfolio-filters button {
   font-family: inherit;
   font-size: 13px;
   font-weight: 500;
-  padding: 6px 18px;
+  padding: 8px 20px !important;
   border-radius: 100px;
   border: 1px solid currentColor;
   background: transparent;
   color: #888;
   cursor: pointer;
   transition: all 0.2s ease;
+  margin-bottom: 10px;
+  margin-left: 10px;
 }
 .wp-block-simple-block-portfolio .portfolio-filters button:hover {
   color: #111;
@@ -305,6 +305,14 @@
   border-color: #999;
   color: #111;
 }
+.wp-block-simple-block-portfolio .search-wraper .search-results-count {
+  background: #f5f5f5;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #888;
+  margin-top: 0.5rem;
+}
 .wp-block-simple-block-portfolio .search-filter-wrapper {
   margin-bottom: 1.5rem;
   display: flex;
@@ -398,4 +406,15 @@
   background: #111;
   color: #fff;
   border-color: #111;
+}
+.wp-block-simple-block-portfolio .simple-block-no-project-found {
+  background-color: #f5f5f5;
+  padding: 3rem;
+  border-radius: 8px;
+  text-align: center;
+}
+.wp-block-simple-block-portfolio .simple-block-no-project-found p {
+  font-size: 24px;
+  color: #888;
+  margin: 0;
 }

@@ -76,13 +76,13 @@ const Edit = ({ attributes, setAttributes }) => {
           options={[
             {value:"infinite", label: 'Infinite Scroll'},
             {value:"classicButton", label: 'Classic Button'},
-            {value:"classicAjax", label: 'Classic with Ajax Replace'},
-            {value:"classicWithLoadMore", label: 'Classic with increment'}
+            {value:"classicAjax", label: 'Load More Replace Content'},
+            {value:"classicWithLoadMore", label: 'Load More'}
           ]}
           onChange={val => setAttributes({loadMoreType: val})}
           />
         </PanelBody>
-        
+
         <PanelColorSettings
           title="Card Styles"
           colorSettings={[

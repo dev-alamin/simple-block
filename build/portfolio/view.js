@@ -58,12 +58,15 @@ const fetchPosts = async (BASE_URL, PER_PAGE, params = {}) => {
     const data = await response.json();
     const mapped = data?.map(mapPost) || [];
     const totalPages = Number(response.headers.get('X-WP-TotalPages'));
+    const totalPosts = Number(response.headers.get('X-WP-Total'));
     caches.set(key, {
       data: mapped,
-      totalPages
+      totalPages,
+      totalPosts
     });
     return {
       data: mapped,
+      totalPosts,
       totalPages
     };
   } catch (err) {
@@ -229,6 +232,8 @@ const {
     },
     setSearchTerm: async e => {
       const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
+      // if ( e.target.value === state.query.search || e.target.value === "" ) return;
+
       state.isLoading = true;
       state.query.search = e.target.value;
       state.query.page = 1;
@@ -237,10 +242,12 @@ const {
         try {
           const {
             data,
-            totalPages
+            totalPages,
+            totalPosts
           } = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query);
           state.posts = data;
           state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.range)(totalPages);
+          state.totalPosts = totalPosts;
           state.isLastPage = state.query.page >= totalPages;
         } catch (err) {
           console.log('Getting error to fetch search term: ', err);
@@ -252,13 +259,22 @@ const {
       if (state.query.search === "") return;
       state.query.search = "";
       state.query.page = 1;
+      state.isLastPage = false;
+      state.isLoading = true;
       try {
         const {
-          data
+          data,
+          totalPosts,
+          totalPages
         } = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query);
         state.posts = data;
       } catch (err) {
         console.log('Getting error to fetch search term: ', err);
+      } finally {
+        state.isLoading = false;
+        state.totalPosts = totalPosts;
+        state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.range)(totalPages);
+        state.isLastPage = state.query.page >= totalPages;
       }
     },
     openModal: () => {
@@ -347,6 +363,9 @@ const {
 
       // Re-observe target
       targetElement._blockObserver.observe(targetElement);
+    },
+    getTotalposts: () => {
+      return state.totalPosts || 0;
     }
   }
 });

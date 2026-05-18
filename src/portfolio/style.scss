@@ -29,21 +29,22 @@ $border-color_2: #999;
 .wp-block-simple-block-portfolio{
 	margin: 20px 0;
 .portfolio-filters {
-	display: flex;
-	gap: 8px;
-	flex-wrap: wrap;
-	margin-bottom: 2rem;
+    margin-bottom: 10px;
+    margin-right: 10px;
+
 	button {
 		font-family: $font-family_1;
 		font-size: 13px;
 		font-weight: 500;
-		padding: 6px 18px;
+		padding: 8px 20px !important;
 		border-radius: 100px;
 		border: 1px solid currentColor;
 		background: transparent;
 		color: $color_1;
 		cursor: pointer;
 		transition: all 0.2s ease;
+		margin-bottom: 10px;
+		margin-right: 10px;
 		&:hover {
 			color: $color_2;
 			border-color: $border-color_1;
@@ -312,6 +313,18 @@ $border-color_2: #999;
 		color: $color_2;
 	}
 }
+.search-wraper{
+	.search-results-count{
+		// use nice typography for count of search results, and light bg, padding and border-radius
+		// display: inline-block;
+		background: #f5f5f5;
+		padding: 4px 12px;
+		border-radius: 8px;
+		font-size: 13px;
+		color: $color_1;
+		margin-top: 0.5rem;
+	}
+}
 .search-filter-wrapper{
 	margin-bottom: 1.5rem;
 	display: flex;
@@ -413,6 +426,18 @@ $border-color_2: #999;
 				color: $color_3;
 				border-color: $border-color_1;
 			}
+		}
+	}
+
+	.simple-block-no-project-found{
+		background-color: #f5f5f5;
+		padding: 3rem;
+		border-radius: 8px;
+		text-align: center;
+		p{
+			font-size: 24px;
+			color: $color_1;
+			margin: 0;
 		}
 	}
 }

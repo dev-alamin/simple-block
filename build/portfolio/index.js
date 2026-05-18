@@ -248,10 +248,10 @@ const Edit = ({
             label: 'Classic Button'
           }, {
             value: "classicAjax",
-            label: 'Classic with Ajax Replace'
+            label: 'Load More Replace Content'
           }, {
             value: "classicWithLoadMore",
-            label: 'Classic with increment'
+            label: 'Load More'
           }],
           onChange: val => setAttributes({
             loadMoreType: val

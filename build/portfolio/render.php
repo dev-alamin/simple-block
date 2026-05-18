@@ -89,6 +89,7 @@ wp_interactivity_state( 'sblock-portfolio', [
     'perPage' => $posts_per_page,
     'totalPages' => $query->max_num_pages,
     'pageNumbers' => range(1, $query->max_num_pages),
+    'totalPosts' => $query->found_posts,
     'isLoading'  => false,
     'isLastPage' => false,
     'isModalOpen' => false,
@@ -178,9 +179,11 @@ $context = array(
                     placeholder="Search projects..."
                     data-wp-on--input="actions.setSearchTerm"
                     data-wp-bind--value="state.query.search" />
-
-                <input type="submit" value="Search" data-wp-on--click="actions.setSearchTerm" />
             </form>
+            <!-- Show number of items we found for search  -->
+            <p class="search-results-count" data-wp-bind--hidden="!state.query.search">
+                <span data-wp-text="state.totalPosts"></span> projects found
+            </p>
         </div>
 
     </div>
@@ -253,10 +256,10 @@ $context = array(
 
             </article>
         </template>
+    </div>
 
-        <template data-wp-if="!state.posts.length">
-            <p class="portfolio-empty">No projects found.</p>
-        </template>
+    <div class="simple-block-no-project-found" data-wp-bind--hidden="callbacks.getTotalposts">
+        <p class="portfolio-empty">No projects found.</p>
     </div>
 
     <div class="pagination-wrapper">

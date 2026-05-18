@@ -8,9 +8,9 @@ const { state } = store('sblock-portfolio', {
     actions: {
         setupEffects: () => {
             const { ref } = getElement();
-            if( ! ref ) return;
+            if (!ref) return;
 
-            store( 'sblock-portfolio').callbacks.manageObserver( ref );
+            store('sblock-portfolio').callbacks.manageObserver(ref);
         },
         filter: async (event) => {
             const categoryId = event.currentTarget.value
@@ -21,7 +21,7 @@ const { state } = store('sblock-portfolio', {
             state.query.page = 1;
 
             const { data, totalPages } = await fetchPosts(state.baseUrl, state.perPage, state.query);
-            state.pageNumbers = range( totalPages );
+            state.pageNumbers = range(totalPages);
             state.posts = data;
 
             state.isLastPage = state.query.page >= totalPages;
@@ -29,7 +29,7 @@ const { state } = store('sblock-portfolio', {
         },
         goToPage: async () => {
             const context = getContext();
-            
+
             state.query.page = context.item;
             state.isLoading = true;
 
@@ -37,7 +37,7 @@ const { state } = store('sblock-portfolio', {
             state.posts = data;
 
             state.isLoading = false;
-            state.pageNumbers = range( totalPages );
+            state.pageNumbers = range(totalPages);
             state.isLastPage = state.query.page >= totalPages;
         },
         loadMore: async () => {
@@ -51,21 +51,22 @@ const { state } = store('sblock-portfolio', {
 
             const { data, totalPages } = await fetchPosts(state.baseUrl, state.perPage, state.query);
             console.log(totalPages);
-            state.pageNumbers = range( totalPages );
+            state.pageNumbers = range(totalPages);
 
             state.isLastPage = state.query.page >= totalPages;
 
-            if(state.pagiStyle === 'classicAjax' ) {
+            if (state.pagiStyle === 'classicAjax') {
                 state.posts = data; // replace items
-            }else if(state.pagiStyle === 'classicWithLoadMore' ) {
+            } else if (state.pagiStyle === 'classicWithLoadMore') {
                 state.posts = [...state.posts, ...data]; // Append items
             }
-            
+
             state.isLoading = false;
         },
         setSearchTerm: async (e) => {
             const context = getContext();
-            
+            // if ( e.target.value === state.query.search || e.target.value === "" ) return;
+
             state.isLoading = true;
             state.query.search = e.target.value;
             state.query.page = 1;
@@ -74,9 +75,11 @@ const { state } = store('sblock-portfolio', {
 
             context._searchTimeout = setTimeout(async () => {
                 try {
-                    const { data, totalPages } = await fetchPosts(state.baseUrl, state.perPage, state.query);
+                    const { data, totalPages, totalPosts } = await fetchPosts(state.baseUrl, state.perPage, state.query);
                     state.posts = data;
-                    state.pageNumbers = range( totalPages );
+
+                    state.pageNumbers = range(totalPages);
+                    state.totalPosts = totalPosts;
                     state.isLastPage = state.query.page >= totalPages;
                 } catch (err) {
                     console.log('Getting error to fetch search term: ', err);
@@ -91,12 +94,19 @@ const { state } = store('sblock-portfolio', {
 
             state.query.search = "";
             state.query.page = 1;
+            state.isLastPage = false;
+            state.isLoading = true;
 
             try {
-                const { data } = await fetchPosts(state.baseUrl, state.perPage, state.query);
+                const { data, totalPosts, totalPages } = await fetchPosts(state.baseUrl, state.perPage, state.query);
                 state.posts = data;
             } catch (err) {
                 console.log('Getting error to fetch search term: ', err);
+            }finally{
+                state.isLoading = false;
+                state.totalPosts = totalPosts;
+                state.pageNumbers = range(totalPages);
+                state.isLastPage = state.query.page >= totalPages;
             }
 
         },
@@ -144,44 +154,44 @@ const { state } = store('sblock-portfolio', {
         hasGallery: () => {
             return state.activePost?.gallery_images?.length > 0;
         },
-        manageObserver: async ( targetElement ) => {
+        manageObserver: async (targetElement) => {
             // Track dependencies. When category, search, or last-page changes, this re-runs automatically!
             const currentCategory = state.query.category;
-            const currentSearch   = state.query.search;
-            const isLastPage      = state.isLastPage;
+            const currentSearch = state.query.search;
+            const isLastPage = state.isLastPage;
 
             // 1. Clean up existing observer instantly on state mutation
-            if ( targetElement._blockObserver ) {
+            if (targetElement._blockObserver) {
                 targetElement._blockObserver.disconnect();
             }
 
             // 2. If it's the last page, don't spin up a new observer instance
-            if ( isLastPage || state.pagiStyle !== 'infinite' ) return;
+            if (isLastPage || state.pagiStyle !== 'infinite') return;
 
             // 3. Re-initialize observer for the new state query context
-            targetElement._blockObserver = new IntersectionObserver( async ( entries ) => {
+            targetElement._blockObserver = new IntersectionObserver(async (entries) => {
                 const entry = entries[0];
-                if ( ! entry || ! entry.isIntersecting ) return;
-                if ( state.isLoading || state.isLastPage ) return;
+                if (!entry || !entry.isIntersecting) return;
+                if (state.isLoading || state.isLastPage) return;
 
                 state.query.page += 1;
                 state.isLoading = true;
 
                 const { data, totalPages } = await fetchPosts(
-                    state.baseUrl, 
-                    state.perPage, 
-                    state.query 
+                    state.baseUrl,
+                    state.perPage,
+                    state.query
                 );
 
                 const combinedPosts = [...state.posts, ...data];
 
-                if ( combinedPosts.length > MAX_DOM_POSTS ) {
-                    state.posts = combinedPosts.slice( combinedPosts.length - MAX_DOM_POSTS );
+                if (combinedPosts.length > MAX_DOM_POSTS) {
+                    state.posts = combinedPosts.slice(combinedPosts.length - MAX_DOM_POSTS);
                 } else {
                     state.posts = combinedPosts;
                 }
 
-                state.pageNumbers = range( totalPages );
+                state.pageNumbers = range(totalPages);
                 state.isLastPage = state.query.page >= totalPages;
                 state.isLoading = false;
 
@@ -192,7 +202,10 @@ const { state } = store('sblock-portfolio', {
             });
 
             // Re-observe target
-            targetElement._blockObserver.observe( targetElement );
+            targetElement._blockObserver.observe(targetElement);
         },
+        getTotalposts: () => {
+            return state.totalPosts || 0;
+        }
     }
 })
