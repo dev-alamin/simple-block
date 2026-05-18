@@ -16,6 +16,8 @@ $args = array(
     'post_type'      => 'sblock_portfolio',
     'posts_per_page' => $posts_per_page ?: 6,
     'post_status'    => 'publish',
+    'update_post_meta_cache' => true, // Performance enhancement: prime post meta cache in bulk
+    'update_post_term_cache' => true,
     // 'no_found_rows' => true,
 );
 
@@ -52,13 +54,16 @@ if ($query->have_posts()) {
         $date = $raw_date ? date_i18n('F j, Y', strtotime($raw_date)) : '';
 
         $gallery_raw = get_post_meta(get_the_ID(), 'project_gallery');
+        $gallery = array();
 
-        $gallery = array_map(function ($id) {
-            return array(
-                'url' => wp_get_attachment_image_url($id, 'full'),
-                'alt' => get_post_meta($id, '_wp_attachment_image_alt', true) ?: get_the_title($id),
-            );
-        }, $gallery_raw[0] ?: []);
+        if( is_array( $gallery_raw ) ) {
+            foreach( $gallery_raw as $id ) {
+                $gallery[] = array(
+                    'url' => wp_get_attachment_image_url( $id, 'full' ),
+                    'alt' => get_post_meta( $id, '_wp_attachment_image_alt', true ) ?: get_the_title( $id ),
+                );
+            }
+        }
 
         $posts[] = array(
             'id'    => get_the_ID(),
@@ -100,8 +105,9 @@ wp_interactivity_state( 'sblock-portfolio', [
 // Interactivity Context
 // -------------------------------------
 $context = array(
-    'filterValue' => 'all', // for isActive callback per button
-    'item'        => null,  // loop item placeholder
+    'filterValue'    => 'all',   // for isActive callback per button
+    'item'           => null,    // loop item placeholder
+    '_searchTimeout' => null,
 );
 ?>
 
@@ -185,6 +191,24 @@ $context = array(
         class="portfolio-grid"
         data-wp-style--opacity="callbacks.gridOpacity"
         data-wp-style--pointer-events="callbacks.gridPointerEvents">
+
+        <!-- SSR Fallback: Search engines read this perfectly, Interactivity replaces it instantly on load -->
+        <div class="ssr-fallback-container" data-wp-bind--hidden="state.isLoaded" style="display: none;">
+            <?php if ( ! empty( $posts ) ) : foreach ( $posts as $fallback_post ) : ?>
+                <article class="portfolio-card fallback-static">
+                    <div class="portfolio-card__thumb">
+                        <a href="<?php echo esc_url( $fallback_post['link'] ); ?>">
+                            <img src="<?php echo esc_url( $fallback_post['featured_image_url'] ); ?>" alt="<?php echo esc_attr( $fallback_post['title']['rendered'] ); ?>" />
+                        </a>
+                    </div>
+                    <div class="portfolio-card__body">
+                        <h3 class="portfolio-card__title"><?php echo esc_html( $fallback_post['title']['rendered'] ); ?></h3>
+                    </div>
+                </article>
+            <?php endforeach; endif; ?>
+        </div>
+
+        <!-- Client-Side Reactive Component Template Loop -->
         <template data-wp-each="state.posts">
             <article class="portfolio-card">
 
@@ -230,22 +254,19 @@ $context = array(
             </article>
         </template>
 
-        
-        <template data-wp-if="!context.posts.length">
+        <template data-wp-if="!state.posts.length">
             <p class="portfolio-empty">No projects found.</p>
         </template>
     </div>
 
     <div class="pagination-wrapper">
 
-        <button class="loadmore-button" 
-        data-wp-on--click="actions.loadMore" 
-        data-wp-bind--hidden="callbacks.setIsLastPage">Load More</button>
+        <?php if( $pagination_style == "classicWithLoadMore" || $pagination_style == "classicAjax" ): ?>
 
-        <?php if( $pagination_style == "infinite" ): ?>
-                <p>I am the boss ready for infinte scroll</p>
-            <?php elseif( $pagination_style == "classicWithLoadMore" ): ?>
-                <p>I am classic with load more</p>
+                <button class="loadmore-button" 
+                    data-wp-on--click="actions.loadMore" 
+                    data-wp-bind--hidden="callbacks.setIsLastPage">Load More</button>
+
             <?php elseif( $pagination_style == "classicButton" ): ?>
 
             <template data-wp-each="state.pageNumbers">
@@ -260,6 +281,13 @@ $context = array(
 
         <?php endif; ?>
     </div>
+
+    <?php if( $pagination_style == "infinite" ): ?>
+        <div
+            class="scroll-sentinel"
+            data-wp-init="actions.setupEffects"
+        ></div>
+    <?php endif; ?>
     <!-- Modal — outside the loop, no nesting problem -->
     <div
         class="portfolio-modal-backdrop"

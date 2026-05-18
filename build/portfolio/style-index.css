@@ -369,8 +369,35 @@
   color: #111;
   border-color: #111;
 }
-.wp-block-simple-block-portfolio .loadmore-button {
+.wp-block-simple-block-portfolio .pagination-wrapper {
   margin-top: 25px;
+}
+.wp-block-simple-block-portfolio .pagination-wrapper button {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 18px;
+  border-radius: 100px;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 3px;
+}
+.wp-block-simple-block-portfolio .pagination-wrapper button:hover {
+  color: #111;
+  border-color: #111;
+}
+.wp-block-simple-block-portfolio .pagination-wrapper button.is-active {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}
+.wp-block-simple-block-portfolio .pagination-wrapper button.is-active:hover {
+  background: #111;
+  color: #fff;
+  border-color: #111;
 }
 
 /*# sourceMappingURL=style-index.css.map*/

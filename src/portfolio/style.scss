@@ -384,7 +384,35 @@ $border-color_2: #999;
 	}
 }
 
-	.loadmore-button{
+	.pagination-wrapper{
 		margin-top: 25px;
+
+		button{
+			font-family: $font-family_1;
+			font-size: 13px;
+			font-weight: 500;
+			padding: 6px 18px;
+			border-radius: 100px;
+			border: 1px solid currentColor;
+			background: transparent;
+			color: $color_1;
+			cursor: pointer;
+			transition: all 0.2s ease;
+			margin: 3px;
+			&:hover {
+				color: $color_2;
+				border-color: $border-color_1;
+			}
+		}
+		button.is-active {
+			background: #111;
+			color: $color_3;
+			border-color: $border-color_1;
+			&:hover {
+				background: #111;
+				color: $color_3;
+				border-color: $border-color_1;
+			}
+		}
 	}
 }

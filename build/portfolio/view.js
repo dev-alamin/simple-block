@@ -164,11 +164,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./src/portfolio/utils.js");
 
 
-let searchTimeout;
+let observer = null;
+const MAX_DOM_POSTS = 90;
 const {
   state
 } = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.store)('sblock-portfolio', {
   actions: {
+    setupEffects: () => {
+      const {
+        ref
+      } = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getElement)();
+      if (!ref) return;
+      (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.store)('sblock-portfolio').callbacks.manageObserver(ref);
+    },
     filter: async event => {
       const categoryId = event.currentTarget.value;
       state.query.category = categoryId;
@@ -192,9 +200,10 @@ const {
         data,
         totalPages
       } = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query);
-      state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.range)(totalPages);
       state.posts = data;
       state.isLoading = false;
+      state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.range)(totalPages);
+      state.isLastPage = state.query.page >= totalPages;
     },
     loadMore: async () => {
       if (state.isLoading || state.isLastPage) return;
@@ -211,17 +220,20 @@ const {
       console.log(totalPages);
       state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.range)(totalPages);
       state.isLastPage = state.query.page >= totalPages;
-
-      // state.posts = [...state.posts, ...data]; // Append items
-      state.posts = data; // replace items
+      if (state.pagiStyle === 'classicAjax') {
+        state.posts = data; // replace items
+      } else if (state.pagiStyle === 'classicWithLoadMore') {
+        state.posts = [...state.posts, ...data]; // Append items
+      }
       state.isLoading = false;
     },
     setSearchTerm: async e => {
+      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
       state.isLoading = true;
       state.query.search = e.target.value;
       state.query.page = 1;
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(async () => {
+      clearTimeout(context._searchTimeout);
+      context._searchTimeout = setTimeout(async () => {
         try {
           const {
             data,
@@ -292,6 +304,49 @@ const {
     },
     hasGallery: () => {
       return state.activePost?.gallery_images?.length > 0;
+    },
+    manageObserver: async targetElement => {
+      // Track dependencies. When category, search, or last-page changes, this re-runs automatically!
+      const currentCategory = state.query.category;
+      const currentSearch = state.query.search;
+      const isLastPage = state.isLastPage;
+
+      // 1. Clean up existing observer instantly on state mutation
+      if (targetElement._blockObserver) {
+        targetElement._blockObserver.disconnect();
+      }
+
+      // 2. If it's the last page, don't spin up a new observer instance
+      if (isLastPage || state.pagiStyle !== 'infinite') return;
+
+      // 3. Re-initialize observer for the new state query context
+      targetElement._blockObserver = new IntersectionObserver(async entries => {
+        const entry = entries[0];
+        if (!entry || !entry.isIntersecting) return;
+        if (state.isLoading || state.isLastPage) return;
+        state.query.page += 1;
+        state.isLoading = true;
+        const {
+          data,
+          totalPages
+        } = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query);
+        const combinedPosts = [...state.posts, ...data];
+        if (combinedPosts.length > MAX_DOM_POSTS) {
+          state.posts = combinedPosts.slice(combinedPosts.length - MAX_DOM_POSTS);
+        } else {
+          state.posts = combinedPosts;
+        }
+        state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.range)(totalPages);
+        state.isLastPage = state.query.page >= totalPages;
+        state.isLoading = false;
+      }, {
+        root: null,
+        rootMargin: '200px',
+        threshold: 0
+      });
+
+      // Re-observe target
+      targetElement._blockObserver.observe(targetElement);
     }
   }
 });
