@@ -63,7 +63,7 @@ const fetchPosts = async (BASE_URL, PER_PAGE, params = {}) => {
     });
     return {
       data: mapped,
-      totalPages: totalPages
+      totalPages
     };
   } catch (err) {
     console.log('Error getting portfolio posts: ', err);
