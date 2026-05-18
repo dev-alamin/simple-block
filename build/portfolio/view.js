@@ -11,7 +11,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   fetchPosts: () => (/* binding */ fetchPosts),
 /* harmony export */   formatDate: () => (/* binding */ formatDate),
-/* harmony export */   mapPost: () => (/* binding */ mapPost)
+/* harmony export */   mapPost: () => (/* binding */ mapPost),
+/* harmony export */   range: () => (/* binding */ range)
 /* harmony export */ });
 const formatDate = raw => {
   if (!raw) return '';
@@ -69,6 +70,13 @@ const fetchPosts = async (BASE_URL, PER_PAGE, params = {}) => {
     console.log('Error getting portfolio posts: ', err);
     return [];
   }
+};
+
+// Make a function to convert number to array elements, for pagination
+const range = size => {
+  return Array.from({
+    length: size
+  }, (_, i) => i + 1);
 };
 
 /***/ },
@@ -171,8 +179,21 @@ const {
         data,
         totalPages
       } = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query);
+      state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.range)(totalPages);
       state.posts = data;
       state.isLastPage = state.query.page >= totalPages;
+      state.isLoading = false;
+    },
+    goToPage: async () => {
+      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
+      state.query.page = context.item;
+      state.isLoading = true;
+      const {
+        data,
+        totalPages
+      } = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query);
+      state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.range)(totalPages);
+      state.posts = data;
       state.isLoading = false;
     },
     loadMore: async () => {
@@ -188,6 +209,7 @@ const {
         totalPages
       } = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query);
       console.log(totalPages);
+      state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.range)(totalPages);
       state.isLastPage = state.query.page >= totalPages;
 
       // state.posts = [...state.posts, ...data]; // Append items
@@ -206,6 +228,7 @@ const {
             totalPages
           } = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query);
           state.posts = data;
+          state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.range)(totalPages);
           state.isLastPage = state.query.page >= totalPages;
         } catch (err) {
           console.log('Getting error to fetch search term: ', err);
@@ -246,6 +269,10 @@ const {
     }
   },
   callbacks: {
+    isCurrentPage: () => {
+      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
+      return context.item === state.query.page;
+    },
     setIsLastPage: () => {
       return state.isLastPage;
     },

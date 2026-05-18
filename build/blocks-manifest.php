@@ -77,6 +77,10 @@ return array(
 			'cardBackground' => array(
 				'type' => 'string',
 				'default' => '#ffffff'
+			),
+			'loadMoreType' => array(
+				'type' => 'string',
+				'default' => 'infinite'
 			)
 		),
 		'providesContext' => array(

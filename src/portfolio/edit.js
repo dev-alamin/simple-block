@@ -11,9 +11,11 @@ import {
   Spinner
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+import { Panel } from '@wordpress/components';
+import { SelectControl } from '@wordpress/components';
 
 const Edit = ({ attributes, setAttributes }) => {
-  const { category, postsPerPage, headingColor, cardBackground } = attributes;
+  const { category, postsPerPage, headingColor, cardBackground, loadMoreType } = attributes;
   const blockProps = useBlockProps();
 
   // 1. Fetch Portfolio Items
@@ -66,6 +68,21 @@ const Edit = ({ attributes, setAttributes }) => {
             onCategoryChange={(val) => setAttributes({ category: val.toString() })}
           />
         </PanelBody>
+
+        <PanelBody title='Load More Button'>
+          <SelectControl
+          label="Choose Option"
+          value={loadMoreType}
+          options={[
+            {value:"infinite", label: 'Infinite Scroll'},
+            {value:"classicButton", label: 'Classic Button'},
+            {value:"classicAjax", label: 'Classic with Ajax Replace'},
+            {value:"classicWithLoadMore", label: 'Classic with increment'}
+          ]}
+          onChange={val => setAttributes({loadMoreType: val})}
+          />
+        </PanelBody>
+        
         <PanelColorSettings
           title="Card Styles"
           colorSettings={[

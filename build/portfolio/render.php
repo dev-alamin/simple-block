@@ -4,8 +4,9 @@
 $posts_per_page  = $attributes['postsPerPage'] ?? 6;
 $selected_category = $attributes['category'] ?? 'all';
 
-$card_background = $attributes['cardBackground'] ?? '#ffffff';
-$heading_color   = $attributes['headingColor'] ?? '#000000';
+$card_background  = $attributes['cardBackground'] ?? '#ffffff';
+$heading_color    = $attributes['headingColor'] ?? '#000000';
+$pagination_style = $attributes['loadMoreType'] ?? 'infinite';
 
 // -------------------------------------
 // Initial Server Query
@@ -15,7 +16,7 @@ $args = array(
     'post_type'      => 'sblock_portfolio',
     'posts_per_page' => $posts_per_page ?: 6,
     'post_status'    => 'publish',
-    'no_found_rows' => true,
+    // 'no_found_rows' => true,
 );
 
 if (
@@ -81,10 +82,13 @@ wp_interactivity_state( 'sblock-portfolio', [
     'baseUrl' => rest_url( '/wp/v2/sblock_portfolio' ),
     'posts'      => $posts,
     'perPage' => $posts_per_page,
+    'totalPages' => $query->max_num_pages,
+    'pageNumbers' => range(1, $query->max_num_pages),
     'isLoading'  => false,
     'isLastPage' => false,
     'isModalOpen' => false,
     'activePost'  => null,
+    'pagiStyle' => $pagination_style,
     'query'       => [
         'page'     => 1,
         'search'   => '',
@@ -232,8 +236,30 @@ $context = array(
         </template>
     </div>
 
-    <button class="loadmore-button" data-wp-on--click="actions.loadMore" data-wp-bind--hidden="callbacks.setIsLastPage">Load More</button>
+    <div class="pagination-wrapper">
 
+        <button class="loadmore-button" 
+        data-wp-on--click="actions.loadMore" 
+        data-wp-bind--hidden="callbacks.setIsLastPage">Load More</button>
+
+        <?php if( $pagination_style == "infinite" ): ?>
+                <p>I am the boss ready for infinte scroll</p>
+            <?php elseif( $pagination_style == "classicWithLoadMore" ): ?>
+                <p>I am classic with load more</p>
+            <?php elseif( $pagination_style == "classicButton" ): ?>
+
+            <template data-wp-each="state.pageNumbers">
+
+                <button 
+                data-wp-text="context.item"
+                data-wp-on--click="actions.goToPage"
+                data-wp-class--is-active="callbacks.isCurrentPage"
+                ></button>
+
+            </template>
+
+        <?php endif; ?>
+    </div>
     <!-- Modal — outside the loop, no nesting problem -->
     <div
         class="portfolio-modal-backdrop"

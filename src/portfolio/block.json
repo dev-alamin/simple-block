@@ -28,6 +28,10 @@
 		"cardBackground": {
 			"type": "string",
 			"default": "#ffffff"
+		},
+		"loadMoreType": {
+			"type": "string",
+			"default": "infinite"
 		}
 	},
 	"providesContext": {

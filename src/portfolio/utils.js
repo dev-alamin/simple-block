@@ -58,3 +58,8 @@ export const fetchPosts = async (BASE_URL, PER_PAGE, params = {}) => {
         return [];
     }
 }
+
+// Make a function to convert number to array elements, for pagination
+export const range = (size) => {
+	return Array.from({ length: size }, (_, i) => i + 1);
+}

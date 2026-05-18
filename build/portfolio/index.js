@@ -163,6 +163,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
 const Edit = ({
   attributes,
   setAttributes
@@ -171,7 +173,8 @@ const Edit = ({
     category,
     postsPerPage,
     headingColor,
-    cardBackground
+    cardBackground,
+    loadMoreType
   } = attributes;
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps)();
 
@@ -230,6 +233,28 @@ const Edit = ({
           selectedCategoryId: category ? parseInt(category, 10) : undefined,
           onCategoryChange: val => setAttributes({
             category: val.toString()
+          })
+        })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.PanelBody, {
+        title: "Load More Button",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.SelectControl, {
+          label: "Choose Option",
+          value: loadMoreType,
+          options: [{
+            value: "infinite",
+            label: 'Infinite Scroll'
+          }, {
+            value: "classicButton",
+            label: 'Classic Button'
+          }, {
+            value: "classicAjax",
+            label: 'Classic with Ajax Replace'
+          }, {
+            value: "classicWithLoadMore",
+            label: 'Classic with increment'
+          }],
+          onChange: val => setAttributes({
+            loadMoreType: val
           })
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.PanelColorSettings, {
@@ -573,7 +598,7 @@ module.exports = window["wp"]["plugins"];
   \**********************************/
 (module) {
 
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"simple-block/portfolio","version":"1.0.0","title":"Portfolio Grid","category":"widgets","icon":"smiley","keywords":["portfolio","grid"],"description":"A block to display a portfolio grid.","example":{},"attributes":{"category":{"type":"number","default":0},"postsPerPage":{"type":"number","default":5},"headingColor":{"type":"string","default":"#000000"},"cardBackground":{"type":"string","default":"#ffffff"}},"providesContext":{"sblock/headingColor":"headingColor","sblock/cardBackground":"cardBackground"},"supports":{"html":false,"color":{"background":true,"text":true},"spacing":{"padding":true,"margin":true},"typography":{"fontSize":true,"lineHeight":true,"fontWeight":true,"letterSpacing":true,"textTransform":true,"fontStyle":true,"textDecoration":true},"interactivity":true},"selectors":{"typography":{"root":".content"}},"textdomain":"portfolio-block","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","viewScriptModule":"file:./view.js","render":"./render.php"}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"simple-block/portfolio","version":"1.0.0","title":"Portfolio Grid","category":"widgets","icon":"smiley","keywords":["portfolio","grid"],"description":"A block to display a portfolio grid.","example":{},"attributes":{"category":{"type":"number","default":0},"postsPerPage":{"type":"number","default":5},"headingColor":{"type":"string","default":"#000000"},"cardBackground":{"type":"string","default":"#ffffff"},"loadMoreType":{"type":"string","default":"infinite"}},"providesContext":{"sblock/headingColor":"headingColor","sblock/cardBackground":"cardBackground"},"supports":{"html":false,"color":{"background":true,"text":true},"spacing":{"padding":true,"margin":true},"typography":{"fontSize":true,"lineHeight":true,"fontWeight":true,"letterSpacing":true,"textTransform":true,"fontStyle":true,"textDecoration":true},"interactivity":true},"selectors":{"typography":{"root":".content"}},"textdomain":"portfolio-block","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","viewScriptModule":"file:./view.js","render":"./render.php"}');
 
 /***/ }
 

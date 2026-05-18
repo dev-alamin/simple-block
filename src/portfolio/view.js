@@ -1,5 +1,5 @@
 import { store, getContext, getElement } from '@wordpress/interactivity';
-import { mapPost, formatDate, fetchPosts } from './utils';
+import { mapPost, formatDate, fetchPosts, range } from './utils';
 
 let searchTimeout;
 
@@ -14,9 +14,21 @@ const { state } = store('sblock-portfolio', {
             state.query.page = 1;
 
             const { data, totalPages } = await fetchPosts(state.baseUrl, state.perPage, state.query);
+            state.pageNumbers = range( totalPages );
             state.posts = data;
 
             state.isLastPage = state.query.page >= totalPages;
+            state.isLoading = false;
+        },
+        goToPage: async () => {
+            const context = getContext();
+            
+            state.query.page = context.item;
+            state.isLoading = true;
+
+            const { data, totalPages } = await fetchPosts(state.baseUrl, state.perPage, state.query);
+            state.pageNumbers = range( totalPages );
+            state.posts = data;
             state.isLoading = false;
         },
         loadMore: async () => {
@@ -30,6 +42,7 @@ const { state } = store('sblock-portfolio', {
 
             const { data, totalPages } = await fetchPosts(state.baseUrl, state.perPage, state.query);
             console.log(totalPages);
+            state.pageNumbers = range( totalPages );
 
             state.isLastPage = state.query.page >= totalPages;
 
@@ -48,6 +61,7 @@ const { state } = store('sblock-portfolio', {
                 try {
                     const { data, totalPages } = await fetchPosts(state.baseUrl, state.perPage, state.query);
                     state.posts = data;
+                    state.pageNumbers = range( totalPages );
                     state.isLastPage = state.query.page >= totalPages;
                 } catch (err) {
                     console.log('Getting error to fetch search term: ', err);
@@ -91,6 +105,10 @@ const { state } = store('sblock-portfolio', {
         }
     },
     callbacks: {
+        isCurrentPage: () => {
+            const context = getContext();
+            return context.item === state.query.page;
+        },
         setIsLastPage: () => {
             return state.isLastPage;
         },
