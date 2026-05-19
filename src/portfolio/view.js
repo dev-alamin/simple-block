@@ -1,9 +1,6 @@
 import { store, getContext, getElement } from '@wordpress/interactivity';
 import { mapPost, formatDate, fetchPosts, range } from './utils';
 
-let observer = null;
-const MAX_DOM_POSTS = 90;
-
 const { state } = store('sblock-portfolio', {
     actions: {
         setupEffects: () => {
@@ -140,10 +137,10 @@ const { state } = store('sblock-portfolio', {
         modalDisplay: () => {
             return state.isModalOpen ? 'flex' : 'none';
         },
-        isActive: (event) => {
-            const context = getContext();
-            const el = context.element ?? event?.currentTarget;
-            return el?.value === state.query.category;
+        isCurrentFilterActive: () => {
+            const { ref } = getElement();
+
+            return String(ref?.value) === String( state.query.category);
         },
         gridOpacity: () => {
             return state.isLoading ? '0.4' : '1';
@@ -155,7 +152,10 @@ const { state } = store('sblock-portfolio', {
             return state.activePost?.gallery_images?.length > 0;
         },
         manageObserver: async (targetElement) => {
-            // Track dependencies. When category, search, or last-page changes, this re-runs automatically!
+            //----
+            // -- Track dependencies. When category, search, or last-page changes, 
+            // -- this re-runs automatically!
+            //----
             const currentCategory = state.query.category;
             const currentSearch = state.query.search;
             const isLastPage = state.isLastPage;
@@ -170,6 +170,7 @@ const { state } = store('sblock-portfolio', {
 
             // 3. Re-initialize observer for the new state query context
             targetElement._blockObserver = new IntersectionObserver(async (entries) => {
+                
                 const entry = entries[0];
                 if (!entry || !entry.isIntersecting) return;
                 if (state.isLoading || state.isLastPage) return;
@@ -185,8 +186,9 @@ const { state } = store('sblock-portfolio', {
 
                 const combinedPosts = [...state.posts, ...data];
 
-                if (combinedPosts.length > MAX_DOM_POSTS) {
-                    state.posts = combinedPosts.slice(combinedPosts.length - MAX_DOM_POSTS);
+                if (combinedPosts.length > (state.maxDomPostsSize ?? 100)) {
+                    // Only allow maximum allowed items to the dom for memory management
+                    state.posts = combinedPosts.slice(combinedPosts.length - state.maxDomPostsSize ?? 100);
                 } else {
                     state.posts = combinedPosts;
                 }

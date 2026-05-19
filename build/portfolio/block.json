@@ -32,6 +32,10 @@
     "loadMoreType": {
       "type": "string",
       "default": "infinite"
+    },
+    "maxDomPostsSize": {
+      "type": "number",
+      "default": 100
     }
   },
   "providesContext": {

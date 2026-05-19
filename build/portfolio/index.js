@@ -174,7 +174,8 @@ const Edit = ({
     postsPerPage,
     headingColor,
     cardBackground,
-    loadMoreType
+    loadMoreType,
+    maxDomPostsSize
   } = attributes;
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps)();
 
@@ -256,6 +257,18 @@ const Edit = ({
           onChange: val => setAttributes({
             loadMoreType: val
           })
+        })
+      }), loadMoreType === "infinite" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.PanelBody, {
+        title: "Max Item in DOM",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.RangeControl, {
+          __next40pxDefaultSize: true,
+          label: "Max Portfolio Allowed",
+          value: maxDomPostsSize,
+          onChange: val => setAttributes({
+            maxDomPostsSize: val
+          }),
+          min: 20,
+          max: 500
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.PanelColorSettings, {
         title: "Card Styles",
@@ -598,7 +611,7 @@ module.exports = window["wp"]["plugins"];
   \**********************************/
 (module) {
 
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"simple-block/portfolio","version":"1.0.0","title":"Portfolio Grid","category":"widgets","icon":"smiley","keywords":["portfolio","grid"],"description":"A block to display a portfolio grid.","example":{},"attributes":{"category":{"type":"number","default":0},"postsPerPage":{"type":"number","default":5},"headingColor":{"type":"string","default":"#000000"},"cardBackground":{"type":"string","default":"#ffffff"},"loadMoreType":{"type":"string","default":"infinite"}},"providesContext":{"sblock/headingColor":"headingColor","sblock/cardBackground":"cardBackground"},"supports":{"html":false,"color":{"background":true,"text":true},"spacing":{"padding":true,"margin":true},"typography":{"fontSize":true,"lineHeight":true,"fontWeight":true,"letterSpacing":true,"textTransform":true,"fontStyle":true,"textDecoration":true},"interactivity":true},"selectors":{"typography":{"root":".content"}},"textdomain":"portfolio-block","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","viewScriptModule":"file:./view.js","render":"./render.php"}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"simple-block/portfolio","version":"1.0.0","title":"Portfolio Grid","category":"widgets","icon":"smiley","keywords":["portfolio","grid"],"description":"A block to display a portfolio grid.","example":{},"attributes":{"category":{"type":"number","default":0},"postsPerPage":{"type":"number","default":5},"headingColor":{"type":"string","default":"#000000"},"cardBackground":{"type":"string","default":"#ffffff"},"loadMoreType":{"type":"string","default":"infinite"},"maxDomPostsSize":{"type":"number","default":100}},"providesContext":{"sblock/headingColor":"headingColor","sblock/cardBackground":"cardBackground"},"supports":{"html":false,"color":{"background":true,"text":true},"spacing":{"padding":true,"margin":true},"typography":{"fontSize":true,"lineHeight":true,"fontWeight":true,"letterSpacing":true,"textTransform":true,"fontStyle":true,"textDecoration":true},"interactivity":true},"selectors":{"typography":{"root":".content"}},"textdomain":"portfolio-block","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","viewScriptModule":"file:./view.js","render":"./render.php"}');
 
 /***/ }
 

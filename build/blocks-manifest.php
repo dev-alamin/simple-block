@@ -81,6 +81,10 @@ return array(
 			'loadMoreType' => array(
 				'type' => 'string',
 				'default' => 'infinite'
+			),
+			'maxDomPostsSize' => array(
+				'type' => 'number',
+				'default' => 100
 			)
 		),
 		'providesContext' => array(

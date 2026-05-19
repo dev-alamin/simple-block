@@ -167,8 +167,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./src/portfolio/utils.js");
 
 
-let observer = null;
-const MAX_DOM_POSTS = 90;
 const {
   state
 } = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.store)('sblock-portfolio', {
@@ -307,10 +305,11 @@ const {
     modalDisplay: () => {
       return state.isModalOpen ? 'flex' : 'none';
     },
-    isActive: event => {
-      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
-      const el = context.element ?? event?.currentTarget;
-      return el?.value === state.query.category;
+    isCurrentFilterActive: () => {
+      const {
+        ref
+      } = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getElement)();
+      return String(ref?.value) === String(state.query.category);
     },
     gridOpacity: () => {
       return state.isLoading ? '0.4' : '1';
@@ -322,7 +321,10 @@ const {
       return state.activePost?.gallery_images?.length > 0;
     },
     manageObserver: async targetElement => {
-      // Track dependencies. When category, search, or last-page changes, this re-runs automatically!
+      //----
+      // -- Track dependencies. When category, search, or last-page changes, 
+      // -- this re-runs automatically!
+      //----
       const currentCategory = state.query.category;
       const currentSearch = state.query.search;
       const isLastPage = state.isLastPage;
@@ -347,8 +349,9 @@ const {
           totalPages
         } = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query);
         const combinedPosts = [...state.posts, ...data];
-        if (combinedPosts.length > MAX_DOM_POSTS) {
-          state.posts = combinedPosts.slice(combinedPosts.length - MAX_DOM_POSTS);
+        if (combinedPosts.length > (state.maxDomPostsSize ?? 100)) {
+          // Only allow maximum allowed items to the dom for memory management
+          state.posts = combinedPosts.slice(combinedPosts.length - state.maxDomPostsSize ?? 100);
         } else {
           state.posts = combinedPosts;
         }

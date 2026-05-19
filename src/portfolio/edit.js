@@ -8,14 +8,21 @@ import {
   PanelBody,
   QueryControls,
   Placeholder,
-  Spinner
+  Spinner,
+  RangeControl
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { Panel } from '@wordpress/components';
 import { SelectControl } from '@wordpress/components';
 
 const Edit = ({ attributes, setAttributes }) => {
-  const { category, postsPerPage, headingColor, cardBackground, loadMoreType } = attributes;
+  const {
+    category, 
+    postsPerPage, 
+    headingColor, 
+    cardBackground, 
+    loadMoreType, 
+    maxDomPostsSize } = attributes;
   const blockProps = useBlockProps();
 
   // 1. Fetch Portfolio Items
@@ -82,7 +89,20 @@ const Edit = ({ attributes, setAttributes }) => {
           onChange={val => setAttributes({loadMoreType: val})}
           />
         </PanelBody>
-
+        
+        {loadMoreType === "infinite" &&
+          <PanelBody title='Max Item in DOM'>
+            <RangeControl
+            __next40pxDefaultSize
+            label='Max Portfolio Allowed'
+            value={maxDomPostsSize}
+            onChange={(val) => setAttributes({maxDomPostsSize: val } ) }
+            min={20}
+            max={500}
+            />
+          </PanelBody>
+          }
+        
         <PanelColorSettings
           title="Card Styles"
           colorSettings={[

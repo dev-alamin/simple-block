@@ -7,6 +7,7 @@ $selected_category = $attributes['category'] ?? 'all';
 $card_background  = $attributes['cardBackground'] ?? '#ffffff';
 $heading_color    = $attributes['headingColor'] ?? '#000000';
 $pagination_style = $attributes['loadMoreType'] ?? 'infinite';
+$max_dom_posts    = $attributes[ 'maxDomPostsSize' ] ?? 100;
 
 // -------------------------------------
 // Initial Server Query
@@ -89,6 +90,7 @@ wp_interactivity_state( 'sblock-portfolio', [
     'perPage' => $posts_per_page,
     'totalPages' => $query->max_num_pages,
     'pageNumbers' => range(1, $query->max_num_pages),
+    'maxDomPostsSize' => $max_dom_posts,
     'totalPosts' => $query->found_posts,
     'isLoading'  => false,
     'isLastPage' => false,
@@ -123,7 +125,7 @@ $context = array(
             <button
                 value="all"
                 data-wp-on--click="actions.filter"
-                data-wp-class--is-active="callbacks.isActive">All</button>
+                data-wp-class--is-active="callbacks.isCurrentFilterActive">All</button>
 
             <?php
             if (! is_wp_error($terms)) :
@@ -131,7 +133,7 @@ $context = array(
                     <button
                         value="<?php echo esc_attr($term->term_id); ?>"
                         data-wp-on--click="actions.filter"
-                        data-wp-class--is-active="callbacks.isActive">
+                        data-wp-class--is-active="callbacks.isCurrentFilterActive">
                         <?php echo esc_html($term->name); ?>
                         <span style="opacity: .7;">(<?php echo esc_attr($term->count); ?>)</span>
                     </button>
