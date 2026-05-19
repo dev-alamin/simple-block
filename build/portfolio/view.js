@@ -168,7 +168,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const {
-  state
+  state,
+  actions
 } = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.store)('sblock-portfolio', {
   actions: {
     setupEffects: () => {
@@ -192,6 +193,21 @@ const {
       state.posts = data;
       state.isLastPage = state.query.page >= totalPages;
       state.isLoading = false;
+    },
+    async fetchTermCounts() {
+      try {
+        const res = await fetch(`${state.termRestUrl}?search=${state.query.search}`);
+        if (!res.ok) {
+          return;
+        }
+        const data = await res.json();
+        state.termCounts = Object.fromEntries(data?.map(({
+          id,
+          count
+        }) => [id, count]));
+      } catch (err) {
+        console.warn('fetchTermCounts failed:', err);
+      }
     },
     goToPage: async () => {
       const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
@@ -230,25 +246,24 @@ const {
     },
     setSearchTerm: async e => {
       const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
-      // if ( e.target.value === state.query.search || e.target.value === "" ) return;
-
       state.isLoading = true;
       state.query.search = e.target.value;
       state.query.page = 1;
       clearTimeout(context._searchTimeout);
       context._searchTimeout = setTimeout(async () => {
         try {
-          const {
+          const [{
             data,
             totalPages,
             totalPosts
-          } = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query);
+          }] = await Promise.all([(0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query), actions.fetchTermCounts() // fires in parallel, same query state
+          ]);
           state.posts = data;
           state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.range)(totalPages);
           state.totalPosts = totalPosts;
           state.isLastPage = state.query.page >= totalPages;
         } catch (err) {
-          console.log('Getting error to fetch search term: ', err);
+          console.warn('Search fetch error:', err);
         }
         state.isLoading = false;
       }, 300);
@@ -266,13 +281,14 @@ const {
           totalPages
         } = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query);
         state.posts = data;
+        state.totalPosts = totalPosts;
+        state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.range)(totalPages);
+        state.isLastPage = state.query.page >= totalPages;
+        await actions.fetchTermCounts();
       } catch (err) {
         console.log('Getting error to fetch search term: ', err);
       } finally {
         state.isLoading = false;
-        state.totalPosts = totalPosts;
-        state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.range)(totalPages);
-        state.isLastPage = state.query.page >= totalPages;
       }
     },
     openModal: () => {
@@ -369,6 +385,14 @@ const {
     },
     getTotalposts: () => {
       return state.totalPosts || 0;
+    },
+    getTermCount: () => {
+      const {
+        termId
+      } = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
+      const count = state.termCounts?.[termId];
+      // Return empty string until counts load, avoids showing "undefined"
+      return count !== undefined ? `(${count})` : '';
     }
   }
 });

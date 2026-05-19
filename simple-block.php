@@ -122,43 +122,73 @@ add_action('rest_api_init', function () {
     ]);
 });
 
-add_filter('rest_prepare_sblock_portfolio', function ( $response, $post, $request ) {
+add_action( 'rest_api_init', function() {
 
-    static $already_added = false;
-    if ($already_added) {
-        return $response;
-    }
-    $already_added = true;
+    register_rest_route( 'simple-block/v1', '/term-counts', [
+        'methods'             => 'GET',
+        'callback'            => 'sblock_get_contextual_term_counts',
+        'permission_callback' => '__return_true',
+        'args'                => [
+            'search'   => [ 'type' => 'string',  'default' => '' ],
+            'category' => [ 'type' => 'integer', 'default' => 0  ],
+        ],
+    ] );
 
-    $search = $request->get_param('search');
-    $matching_posts = get_posts([
+} );
+
+function sblock_get_contextual_term_counts( \WP_REST_Request $request ) {
+    $search   = sanitize_text_field( $request->get_param( 'search' ) );
+    $category = absint( $request->get_param( 'category' ) );
+
+    // Build the same query your filter block uses (no paging — get all IDs)
+    $args = [
         'post_type'      => 'sblock_portfolio',
-        'post_status'    => 'publish',
         'posts_per_page' => -1,
-        'fields'         => 'ids',
-        's'              => $search,
-    ]);
+        'fields'         => 'ids',  // lightweight — only fetch IDs
+        'post_status'    => 'publish',
+    ];
 
-    $terms = wp_get_object_terms(
-        $matching_posts,
-        'sblock_portfolio_category',
-        [
-            'fields' => 'all_with_object_id'
-        ]
-    );
-
-    $counts = array();
-    foreach ( $terms as $term ) {
-        if ( ! isset( $counts[ $term->term_id ] ) ) {
-            $counts[ $term->term_id ] = 0;
-        }
-
-        $counts[ $term->term_id ]++;
+    if ( $search ) {
+        $args['s'] = $search;
     }
 
-    $data = $response->get_data();
-    $data['termCounts'] = $counts;
-    $response->set_data($data);
+    if ( $category ) {
+        $args['tax_query'] = [ [
+            'taxonomy' => 'sblock_portfolio_category',
+            'field'    => 'term_id',
+            'terms'    => $category,
+        ] ];
+    }
 
-    return $response;
-}, 10, 3);
+    $query    = new WP_Query( $args );
+    $post_ids = $query->posts; // just IDs
+
+    if ( empty( $post_ids ) ) {
+        // Return all terms with 0 count
+        $terms = get_terms( [ 'taxonomy' => 'sblock_portfolio_category', 'hide_empty' => false ] );
+        return array_map( fn( $t ) => [ 'id' => $t->term_id, 'name' => $t->name, 'count' => 0 ], $terms );
+    }
+
+    // Count how many matching posts belong to each term
+    $terms = get_terms( [
+        'taxonomy'   => 'sblock_portfolio_category',
+        'hide_empty' => false,
+        'object_ids' => $post_ids,  // ← key: scope terms to matching posts
+    ] );
+
+    $counts = [];
+    foreach ( $terms as $term ) {
+        // get_objects_in_term gives IDs of posts in this term
+        $term_post_ids   = get_objects_in_term( $term->term_id, 'sblock_portfolio_category' );
+        $intersect_count = count( array_intersect( $post_ids, $term_post_ids ) );
+
+        $counts[] = [
+            'id'    => $term->term_id,
+            'slug'  => $term->slug,
+            'name'  => $term->name,
+            'count' => $intersect_count,
+        ];
+    }
+
+    return $counts;
+}

@@ -1,7 +1,7 @@
 import { store, getContext, getElement } from '@wordpress/interactivity';
 import { mapPost, formatDate, fetchPosts, range } from './utils';
 
-const { state } = store('sblock-portfolio', {
+const { state, actions } = store('sblock-portfolio', {
     actions: {
         setupEffects: () => {
             const { ref } = getElement();
@@ -23,6 +23,22 @@ const { state } = store('sblock-portfolio', {
 
             state.isLastPage = state.query.page >= totalPages;
             state.isLoading = false;
+        },
+        async fetchTermCounts() {
+            try {
+                const res = await fetch( `${state.termRestUrl}?search=${ state.query.search }` );
+
+                if ( ! res.ok ) {
+                    return;
+                }
+
+                const data = await res.json();
+                state.termCounts = Object.fromEntries(
+                    data?.map( ( { id, count } ) => [ id, count ] )
+                );
+            } catch ( err ) {
+                console.warn( 'fetchTermCounts failed:', err );
+            }
         },
         goToPage: async () => {
             const context = getContext();
@@ -62,29 +78,30 @@ const { state } = store('sblock-portfolio', {
         },
         setSearchTerm: async (e) => {
             const context = getContext();
-            // if ( e.target.value === state.query.search || e.target.value === "" ) return;
 
             state.isLoading = true;
             state.query.search = e.target.value;
             state.query.page = 1;
 
-            clearTimeout(context._searchTimeout);
+            clearTimeout( context._searchTimeout );
 
-            context._searchTimeout = setTimeout(async () => {
+            context._searchTimeout = setTimeout( async () => {
                 try {
-                    const { data, totalPages, totalPosts } = await fetchPosts(state.baseUrl, state.perPage, state.query);
-                    state.posts = data;
+                    const [{ data, totalPages, totalPosts }] = await Promise.all([
+                        fetchPosts( state.baseUrl, state.perPage, state.query ),
+                        actions.fetchTermCounts(), // fires in parallel, same query state
+                    ]);
 
-                    state.pageNumbers = range(totalPages);
-                    state.totalPosts = totalPosts;
-                    state.isLastPage = state.query.page >= totalPages;
-                } catch (err) {
-                    console.log('Getting error to fetch search term: ', err);
+                    state.posts       = data;
+                    state.pageNumbers = range( totalPages );
+                    state.totalPosts  = totalPosts;
+                    state.isLastPage  = state.query.page >= totalPages;
+                } catch ( err ) {
+                    console.warn( 'Search fetch error:', err );
                 }
 
                 state.isLoading = false;
-            }, 300);
-
+            }, 300 );
         },
         clearSearchTerm: async () => {
             if (state.query.search === "") return;
@@ -97,13 +114,15 @@ const { state } = store('sblock-portfolio', {
             try {
                 const { data, totalPosts, totalPages } = await fetchPosts(state.baseUrl, state.perPage, state.query);
                 state.posts = data;
+
+                state.totalPosts = totalPosts;
+                state.pageNumbers = range(totalPages);
+                state.isLastPage = state.query.page >= totalPages;
+                await actions.fetchTermCounts();
             } catch (err) {
                 console.log('Getting error to fetch search term: ', err);
             }finally{
                 state.isLoading = false;
-                state.totalPosts = totalPosts;
-                state.pageNumbers = range(totalPages);
-                state.isLastPage = state.query.page >= totalPages;
             }
 
         },
@@ -208,6 +227,12 @@ const { state } = store('sblock-portfolio', {
         },
         getTotalposts: () => {
             return state.totalPosts || 0;
-        }
+        },
+        getTermCount: () => {
+            const { termId } = getContext();
+            const count = state.termCounts?.[ termId ];
+            // Return empty string until counts load, avoids showing "undefined"
+            return count !== undefined ? `(${ count })` : '';
+        },
     }
 })

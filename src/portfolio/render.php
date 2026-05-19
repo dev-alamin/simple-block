@@ -40,6 +40,11 @@ $terms = get_terms(array(
     'hide_empty' => true,
 ));
 
+$initial_term_counts = new stdClass();
+foreach ( $terms as $term ) {
+    $term_id = (string) $term->term_id; // force string key so JSON stays an object
+    $initial_term_counts->$term_id = (int) $term->count;
+}
 $query = new WP_Query($args);
 
 // -------------------------------------
@@ -85,19 +90,21 @@ if ($query->have_posts()) {
 }
 
 wp_interactivity_state( 'sblock-portfolio', [
-    'baseUrl' => rest_url( '/wp/v2/sblock_portfolio' ),
-    'posts'      => $posts,
-    'perPage' => $posts_per_page,
-    'totalPages' => $query->max_num_pages,
-    'pageNumbers' => range(1, $query->max_num_pages),
+    'baseUrl'         => rest_url( '/wp/v2/sblock_portfolio' ),
+    'termRestUrl'     => rest_url( '/simple-block/v1/term-counts' ),
+    'posts'           => $posts,
+    'perPage'         => $posts_per_page,
+    'totalPages'      => $query->max_num_pages,
+    'pageNumbers'     => range(1, $query->max_num_pages),
     'maxDomPostsSize' => $max_dom_posts,
-    'totalPosts' => $query->found_posts,
-    'isLoading'  => false,
-    'isLastPage' => false,
-    'isModalOpen' => false,
-    'activePost'  => null,
-    'pagiStyle' => $pagination_style,
-    'query'       => [
+    'totalPosts'      => $query->found_posts,
+    'termCounts'      => $initial_term_counts,
+    'isLoading'       => false,
+    'isLastPage'      => false,
+    'isModalOpen'     => false,
+    'activePost'      => null,
+    'pagiStyle'       => $pagination_style,
+    'query'           => [
         'page'     => 1,
         'search'   => '',
         'category' => $selected_category ? (string) $selected_category : 'all',
@@ -127,18 +134,26 @@ $context = array(
                 data-wp-on--click="actions.filter"
                 data-wp-class--is-active="callbacks.isCurrentFilterActive">All</button>
 
-            <?php
-            if (! is_wp_error($terms)) :
-                foreach ($terms as $term) : ?>
+                <?php foreach ( $terms as $term ) : ?>
                     <button
-                        value="<?php echo esc_attr($term->term_id); ?>"
+                        class="sblock-filter-btn"
+                        value="<?php echo esc_attr( $term->term_id ); ?>"
+                        data-wp-context='<?php echo json_encode( [ "termId" => $term->term_id ] ); ?>'
                         data-wp-on--click="actions.filter"
-                        data-wp-class--is-active="callbacks.isCurrentFilterActive">
-                        <?php echo esc_html($term->name); ?>
-                        <span style="opacity: .7;">(<?php echo esc_attr($term->count); ?>)</span>
+                        data-wp-class--is-active="callbacks.isCurrentFilterActive"
+                    >
+                        <?php echo esc_html( $term->name ); ?>
+
+                        <!-- PHP renders initial count — visible immediately -->
+                        <span
+                            class="sblock-term-count"
+                            data-wp-text="callbacks.getTermCount"
+                        >
+                            (<?php echo (int) $term->count; ?>)
+                        </span>
+
                     </button>
-            <?php endforeach;
-            endif; ?>
+                <?php endforeach; ?>
 
         </nav>
 
