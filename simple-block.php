@@ -146,6 +146,7 @@ function sblock_get_contextual_term_counts( \WP_REST_Request $request ) {
         'posts_per_page' => -1,
         'fields'         => 'ids',  // lightweight — only fetch IDs
         'post_status'    => 'publish',
+        'no_found_rows'  => true,
     ];
 
     if ( $search ) {
@@ -190,5 +191,60 @@ function sblock_get_contextual_term_counts( \WP_REST_Request $request ) {
         ];
     }
 
+    global $wpdb;
+    $post_ids_placeholder = implode(',', array_fill(0, count($post_ids), '%d'));
+
+    $rows = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT t.term_id, COUNT(*) as count
+            FROM {$wpdb->term_relationships} tr
+            JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
+            JOIN {$wpdb->terms} t ON tt.term_id = t.term_id
+            WHERE tt.taxonomy = %s
+            AND tr.object_id IN ($post_ids_placeholder)
+            GROUP BY t.term_id",
+            array_merge(['sblock_portfolio_category'], $post_ids)
+        )
+    );
+
     return $counts;
+}
+
+function get_page_numbers( int $current_page, int $total_pages ): array {
+    if ( $total_pages <= 7 ) {
+        return range( 1, $total_pages );
+    }
+
+    $delta = 2;
+    $pages = [];
+
+    // Always show first page
+    $pages[] = 1;
+
+    $range_start = max( 2, $current_page - $delta );
+    $range_end   = min( $total_pages - 1, $current_page + $delta );
+
+    // Ellipsis after page 1 — only if there's an actual gap
+    if ( $range_start > 2 ) {
+        $pages[] = '...';
+    }
+
+    for ( $i = $range_start; $i <= $range_end; $i++ ) {
+        $pages[] = $i;
+    }
+
+    // Ellipsis before last page — only if there's an actual gap
+    if ( $range_end < $total_pages - 1 ) {
+        $pages[] = '...';
+    }
+
+    // Always show last page — but only if it's not already included
+    if ( $total_pages > 1 ) {
+        $pages[] = $total_pages;
+    }
+
+    // Always show last page
+    $pages[] = $total_pages;
+
+    return $pages;
 }

@@ -22,7 +22,15 @@ export const mapPost = (post) => ( {
 } );
 
 const caches = new Map();
+const CACHE_TTL = 3000; // Need to implement TTL to invalidate cache
 
+/**
+ * Utility general function to fetch posts from WP CPT.
+ * @param {string} BASE_URL 
+ * @param {number} PER_PAGE 
+ * @param {object} params 
+ * @returns object
+ */
 export const fetchPosts = async (BASE_URL, PER_PAGE, params = {}) => {
     const { page = 1, category = 'all', search = "" } = params;
 
@@ -61,7 +69,49 @@ export const fetchPosts = async (BASE_URL, PER_PAGE, params = {}) => {
     }
 }
 
-// Make a function to convert number to array elements, for pagination
+/**
+ * Convert input number into Array.
+ * @param {number} size 
+ * @returns 
+ */
 export const range = (size) => {
 	return Array.from({ length: size }, (_, i) => i + 1);
+}
+
+/**
+ * Get Pagination Numder as an Array.
+ * @param {number} current 
+ * @param {number} total 
+ * @returns array
+ */
+export function getPageNumbers(currentPage, totalPages) {
+    if( totalPages <= 1 ) return [];
+    
+    if (totalPages <= 7) {
+        return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    const pages = [];
+    const delta = 2;
+
+    const rangeStart = Math.max(2, currentPage - delta);
+    const rangeEnd   = Math.min(totalPages - 1, currentPage + delta);
+
+    pages.push(1);
+
+    if (rangeStart > 2) {
+        pages.push('...');
+    }
+
+    for (let i = rangeStart; i <= rangeEnd; i++) {
+        pages.push(i);
+    }
+
+    if (rangeEnd < totalPages - 1) {
+        pages.push('...');
+    }
+
+    pages.push(totalPages);
+
+    return pages;
 }

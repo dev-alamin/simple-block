@@ -45,7 +45,8 @@ foreach ( $terms as $term ) {
     $term_id = (string) $term->term_id; // force string key so JSON stays an object
     $initial_term_counts->$term_id = (int) $term->count;
 }
-$query = new WP_Query($args);
+
+$query = new \WP_Query($args);
 
 // -------------------------------------
 // Prepare Initial Posts for Hydration
@@ -89,13 +90,14 @@ if ($query->have_posts()) {
     wp_reset_postdata();
 }
 
+$current_page = get_query_var( 'paged', 1 ) ?: 1;
 wp_interactivity_state( 'sblock-portfolio', [
     'baseUrl'         => rest_url( '/wp/v2/sblock_portfolio' ),
     'termRestUrl'     => rest_url( '/simple-block/v1/term-counts' ),
     'posts'           => $posts,
     'perPage'         => $posts_per_page,
     'totalPages'      => $query->max_num_pages,
-    'pageNumbers'     => range(1, $query->max_num_pages),
+    'pageNumbers'     => get_page_numbers( $current_page, $query->max_num_pages ),
     'maxDomPostsSize' => $max_dom_posts,
     'totalPosts'      => $query->found_posts,
     'termCounts'      => $initial_term_counts,
@@ -290,13 +292,12 @@ $context = array(
             <?php elseif( $pagination_style == "classicButton" ): ?>
 
             <template data-wp-each="state.pageNumbers">
-
-                <button 
-                data-wp-text="context.item"
-                data-wp-on--click="actions.goToPage"
-                data-wp-class--is-active="callbacks.isCurrentPage"
-                ></button>
-
+                <button
+                    data-wp-text="context.item"
+                    data-wp-on--click="actions.goToPage"
+                    data-wp-class--is-active="callbacks.isCurrentPage"
+                    data-wp-class--is-dots="callbacks.isDots">
+                </button>
             </template>
 
         <?php endif; ?>

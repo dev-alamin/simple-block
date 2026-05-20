@@ -1,13 +1,13 @@
 import { store, getContext, getElement } from '@wordpress/interactivity';
-import { mapPost, formatDate, fetchPosts, range } from './utils';
+import { mapPost, formatDate, fetchPosts, range, getPageNumbers } from './utils';
 
-const { state, actions } = store('sblock-portfolio', {
+const { state, actions, callbacks } = store('sblock-portfolio', {
     actions: {
         setupEffects: () => {
             const { ref } = getElement();
             if (!ref) return;
 
-            store('sblock-portfolio').callbacks.manageObserver(ref);
+            callbacks.manageObserver(ref);
         },
         filter: async (event) => {
             const categoryId = event.currentTarget.value
@@ -18,7 +18,7 @@ const { state, actions } = store('sblock-portfolio', {
             state.query.page = 1;
 
             const { data, totalPages } = await fetchPosts(state.baseUrl, state.perPage, state.query);
-            state.pageNumbers = range(totalPages);
+            state.pageNumbers = getPageNumbers( state.query.page, totalPages );
             state.posts = data;
 
             state.isLastPage = state.query.page >= totalPages;
@@ -42,15 +42,17 @@ const { state, actions } = store('sblock-portfolio', {
         },
         goToPage: async () => {
             const context = getContext();
+            const pageNumber = Number(context.item);
+            if( ! Number.isFinite( pageNumber ) ) return;
 
-            state.query.page = context.item;
+            state.query.page = pageNumber;
             state.isLoading = true;
 
             const { data, totalPages } = await fetchPosts(state.baseUrl, state.perPage, state.query);
             state.posts = data;
 
             state.isLoading = false;
-            state.pageNumbers = range(totalPages);
+            state.pageNumbers = getPageNumbers( pageNumber, totalPages );
             state.isLastPage = state.query.page >= totalPages;
         },
         loadMore: async () => {
@@ -63,7 +65,6 @@ const { state, actions } = store('sblock-portfolio', {
             // console.log( 'fetching page:', state.page ); // what page?
 
             const { data, totalPages } = await fetchPosts(state.baseUrl, state.perPage, state.query);
-            console.log(totalPages);
             state.pageNumbers = range(totalPages);
 
             state.isLastPage = state.query.page >= totalPages;
@@ -93,7 +94,7 @@ const { state, actions } = store('sblock-portfolio', {
                     ]);
 
                     state.posts       = data;
-                    state.pageNumbers = range( totalPages );
+                    state.pageNumbers = getPageNumbers( state.query.page, totalPages );
                     state.totalPosts  = totalPosts;
                     state.isLastPage  = state.query.page >= totalPages;
                 } catch ( err ) {
@@ -116,7 +117,7 @@ const { state, actions } = store('sblock-portfolio', {
                 state.posts = data;
 
                 state.totalPosts = totalPosts;
-                state.pageNumbers = range(totalPages);
+                state.pageNumbers = getPageNumbers( state.query.page, totalPages );
                 state.isLastPage = state.query.page >= totalPages;
                 await actions.fetchTermCounts();
             } catch (err) {
@@ -233,6 +234,10 @@ const { state, actions } = store('sblock-portfolio', {
             const count = state.termCounts?.[ termId ];
             // Return empty string until counts load, avoids showing "undefined"
             return count !== undefined ? `(${ count })` : '';
+        },
+        isDots: () => {
+            const context = getContext();
+            return context.item === '...';
         },
     }
 })

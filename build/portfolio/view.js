@@ -11,6 +11,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   fetchPosts: () => (/* binding */ fetchPosts),
 /* harmony export */   formatDate: () => (/* binding */ formatDate),
+/* harmony export */   getPageNumbers: () => (/* binding */ getPageNumbers),
 /* harmony export */   mapPost: () => (/* binding */ mapPost),
 /* harmony export */   range: () => (/* binding */ range)
 /* harmony export */ });
@@ -36,6 +37,15 @@ const mapPost = post => ({
   gallery_count: post.gallery_images?.length || 0
 });
 const caches = new Map();
+const CACHE_TTL = 3000; // Need to implement TTL to invalidate cache
+
+/**
+ * Utility general function to fetch posts from WP CPT.
+ * @param {string} BASE_URL 
+ * @param {number} PER_PAGE 
+ * @param {object} params 
+ * @returns object
+ */
 const fetchPosts = async (BASE_URL, PER_PAGE, params = {}) => {
   const {
     page = 1,
@@ -75,12 +85,47 @@ const fetchPosts = async (BASE_URL, PER_PAGE, params = {}) => {
   }
 };
 
-// Make a function to convert number to array elements, for pagination
+/**
+ * Convert input number into Array.
+ * @param {number} size 
+ * @returns 
+ */
 const range = size => {
   return Array.from({
     length: size
   }, (_, i) => i + 1);
 };
+
+/**
+ * Get Pagination Numder as an Array.
+ * @param {number} current 
+ * @param {number} total 
+ * @returns array
+ */
+function getPageNumbers(currentPage, totalPages) {
+  if (totalPages <= 1) return [];
+  if (totalPages <= 7) {
+    return Array.from({
+      length: totalPages
+    }, (_, i) => i + 1);
+  }
+  const pages = [];
+  const delta = 2;
+  const rangeStart = Math.max(2, currentPage - delta);
+  const rangeEnd = Math.min(totalPages - 1, currentPage + delta);
+  pages.push(1);
+  if (rangeStart > 2) {
+    pages.push('...');
+  }
+  for (let i = rangeStart; i <= rangeEnd; i++) {
+    pages.push(i);
+  }
+  if (rangeEnd < totalPages - 1) {
+    pages.push('...');
+  }
+  pages.push(totalPages);
+  return pages;
+}
 
 /***/ },
 
@@ -169,7 +214,8 @@ __webpack_require__.r(__webpack_exports__);
 
 const {
   state,
-  actions
+  actions,
+  callbacks
 } = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.store)('sblock-portfolio', {
   actions: {
     setupEffects: () => {
@@ -177,7 +223,7 @@ const {
         ref
       } = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getElement)();
       if (!ref) return;
-      (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.store)('sblock-portfolio').callbacks.manageObserver(ref);
+      callbacks.manageObserver(ref);
     },
     filter: async event => {
       const categoryId = event.currentTarget.value;
@@ -189,7 +235,7 @@ const {
         data,
         totalPages
       } = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query);
-      state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.range)(totalPages);
+      state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.getPageNumbers)(state.query.page, totalPages);
       state.posts = data;
       state.isLastPage = state.query.page >= totalPages;
       state.isLoading = false;
@@ -211,7 +257,9 @@ const {
     },
     goToPage: async () => {
       const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
-      state.query.page = context.item;
+      const pageNumber = Number(context.item);
+      if (!Number.isFinite(pageNumber)) return;
+      state.query.page = pageNumber;
       state.isLoading = true;
       const {
         data,
@@ -219,7 +267,7 @@ const {
       } = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query);
       state.posts = data;
       state.isLoading = false;
-      state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.range)(totalPages);
+      state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.getPageNumbers)(pageNumber, totalPages);
       state.isLastPage = state.query.page >= totalPages;
     },
     loadMore: async () => {
@@ -234,7 +282,6 @@ const {
         data,
         totalPages
       } = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query);
-      console.log(totalPages);
       state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.range)(totalPages);
       state.isLastPage = state.query.page >= totalPages;
       if (state.pagiStyle === 'classicAjax') {
@@ -259,7 +306,7 @@ const {
           }] = await Promise.all([(0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query), actions.fetchTermCounts() // fires in parallel, same query state
           ]);
           state.posts = data;
-          state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.range)(totalPages);
+          state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.getPageNumbers)(state.query.page, totalPages);
           state.totalPosts = totalPosts;
           state.isLastPage = state.query.page >= totalPages;
         } catch (err) {
@@ -282,7 +329,7 @@ const {
         } = await (0,_utils__WEBPACK_IMPORTED_MODULE_1__.fetchPosts)(state.baseUrl, state.perPage, state.query);
         state.posts = data;
         state.totalPosts = totalPosts;
-        state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.range)(totalPages);
+        state.pageNumbers = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.getPageNumbers)(state.query.page, totalPages);
         state.isLastPage = state.query.page >= totalPages;
         await actions.fetchTermCounts();
       } catch (err) {
@@ -393,6 +440,10 @@ const {
       const count = state.termCounts?.[termId];
       // Return empty string until counts load, avoids showing "undefined"
       return count !== undefined ? `(${count})` : '';
+    },
+    isDots: () => {
+      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
+      return context.item === '...';
     }
   }
 });

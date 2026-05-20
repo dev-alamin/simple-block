@@ -380,6 +380,11 @@
 .wp-block-simple-block-portfolio .pagination-wrapper {
   margin-top: 25px;
 }
+.wp-block-simple-block-portfolio .pagination-wrapper .is-dots {
+  pointer-events: none;
+  cursor: default;
+  opacity: 0.5;
+}
 .wp-block-simple-block-portfolio .pagination-wrapper button {
   font-family: inherit;
   font-size: 13px;

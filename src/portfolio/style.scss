@@ -400,6 +400,12 @@ $border-color_2: #999;
 	.pagination-wrapper{
 		margin-top: 25px;
 
+		.is-dots {
+			pointer-events: none;
+			cursor: default;
+			opacity: 0.5;
+		}
+
 		button{
 			font-family: $font-family_1;
 			font-size: 13px;
